@@ -585,6 +585,8 @@ async function callCoachRep(messages, system, max_tokens){
   if(error) throw new Error(error.message);
   return data;
 }
+
+function getExerciseInfo(name){
   const n = name.toLowerCase();
   return EXERCISE_DB.find(e => n.includes(e.name.toLowerCase()) || e.name.toLowerCase().includes(n.split(' ')[0])) || null;
 }

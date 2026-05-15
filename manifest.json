@@ -1,0 +1,27 @@
+{
+  "id": "replog-app-2024",
+  "name": "RepLog",
+  "short_name": "RepLog",
+  "description": "Your adaptive AI-powered workout tracker. Built for the work.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "orientation": "portrait",
+  "dir": "ltr",
+  "lang": "en-US",
+  "categories": ["health", "fitness", "sports"],
+  "prefer_related_applications": false,
+  "launch_handler": { "client_mode": "focus-existing" },
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Today's Workout", "short_name": "Today", "url": "./index.html#today", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Coach Rep", "short_name": "Coach", "url": "./index.html#coach", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Stats & PRs", "short_name": "Stats", "url": "./index.html#stats", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -800,7 +800,7 @@ A new user has just completed onboarding. Build them a complete weekly workout p
 - Available equipment: ${onboardData.equipment.join(', ')||'bodyweight only'}
 - Days per week: ${onboardData.days}
 
-Return a JSON object with this exact structure (no markdown, no extra text, valid JSON only):
+Return ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after. Use only double quotes. No apostrophes in string values — use alternate wording instead. Valid JSON only:
 {
   "name": "Program name",
   "description": "1 sentence description",
@@ -841,7 +841,14 @@ Include 5-7 exercises per training day. Include rest days. Include core exercise
     const data = await response.json();
     clearInterval(interval);
     const text = data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    const clean = text.replace(/```json|```/g,'').trim();
+    // Clean up common JSON issues from AI responses
+    let clean = text.replace(/```json|```/g,'').trim();
+    // Find the JSON object boundaries
+    const start = clean.indexOf('{');
+    const end = clean.lastIndexOf('}');
+    if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
+    // Fix smart quotes and common issues
+    clean = clean.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
     const program = JSON.parse(clean);
     program.user_id = currentUser ? currentUser.id : 'guest';
     program.is_active = true;

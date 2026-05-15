@@ -399,14 +399,16 @@ textarea.notes-ta:focus{border-color:var(--accent);}
   <!-- Step 1: Goal -->
   <div class="onboard-step active" id="step-1">
     <div class="onboard-header">
-      <h2>What's your main goal?</h2>
-      <p>Coach Rep will build your program around this.</p>
+      <h2>What are your goals?</h2>
+      <p>Select all that apply — Coach Rep will balance your program around them.</p>
     </div>
     <div class="option-grid">
-      <button class="option-btn" onclick="selectOption(this,'goal','Build strength')"><div class="opt-icon">🏋️</div><div class="opt-label">Build strength</div><div class="opt-sub">Get stronger lifts</div></button>
-      <button class="option-btn" onclick="selectOption(this,'goal','Lose fat')"><div class="opt-icon">🔥</div><div class="opt-label">Lose fat</div><div class="opt-sub">Body recomp</div></button>
-      <button class="option-btn" onclick="selectOption(this,'goal','Build muscle')"><div class="opt-icon">💪</div><div class="opt-label">Build muscle</div><div class="opt-sub">Hypertrophy</div></button>
-      <button class="option-btn" onclick="selectOption(this,'goal','General fitness')"><div class="opt-icon">⚡</div><div class="opt-label">General fitness</div><div class="opt-sub">Overall health</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'Build strength')"><div class="opt-icon">🏋️</div><div class="opt-label">Build strength</div><div class="opt-sub">Get stronger lifts</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'Lose fat')"><div class="opt-icon">🔥</div><div class="opt-label">Lose fat</div><div class="opt-sub">Body recomp</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'Build muscle')"><div class="opt-icon">💪</div><div class="opt-label">Build muscle</div><div class="opt-sub">Hypertrophy</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'General fitness')"><div class="opt-icon">⚡</div><div class="opt-label">General fitness</div><div class="opt-sub">Overall health</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'Increase endurance')"><div class="opt-icon">🏃</div><div class="opt-label">Endurance</div><div class="opt-sub">Cardio fitness</div></button>
+      <button class="option-btn" onclick="toggleGoal(this,'Improve mobility')"><div class="opt-icon">🧘</div><div class="opt-label">Mobility</div><div class="opt-sub">Flexibility & movement</div></button>
     </div>
     <button class="onboard-next" onclick="nextStep(2)">Continue</button>
   </div>
@@ -565,7 +567,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ── STATE ──────────────────────────────────────────────────────
 let currentUser = null;
 let currentDate = new Date();
-let onboardData = { goal:'', level:'', equipment:[], days:'5' };
+let onboardData = { goals:[], level:'', equipment:[], days:'5' };
 let activeProgram = null;
 let conversationHistory = [];
 let isGuest = false;
@@ -733,6 +735,13 @@ function selectOption(btn, key, val){
   onboardData[key] = val;
 }
 
+function toggleGoal(btn, val){
+  btn.classList.toggle('selected');
+  const idx = onboardData.goals.indexOf(val);
+  if(idx>=0) onboardData.goals.splice(idx,1);
+  else onboardData.goals.push(val);
+}
+
 function toggleEquip(btn, val){
   btn.classList.toggle('selected');
   const idx = onboardData.equipment.indexOf(val);
@@ -767,7 +776,7 @@ async function buildProgram(){
   const prompt = `You are Coach Rep, an expert strength and conditioning coach inside the RepLog fitness app.
 
 A new user has just completed onboarding. Build them a complete weekly workout program based on their profile:
-- Goal: ${onboardData.goal}
+- Goal: ${onboardData.goals.length>0?onboardData.goals.join(', '):'General fitness'}
 - Experience level: ${onboardData.level}  
 - Available equipment: ${onboardData.equipment.join(', ')||'bodyweight only'}
 - Days per week: ${onboardData.days}
@@ -1384,7 +1393,7 @@ async function sendMessage(){
   const systemPrompt=`You are Coach Rep, an encouraging, knowledgeable, and direct AI strength coach inside the RepLog fitness app. You are conversational, supportive, and data-driven.
 
 User's program: ${activeProgram?activeProgram.name:'Unknown'}
-User's goal: ${onboardData.goal||'General fitness'}
+User's goal: ${onboardData.goals.join(', ')||'General fitness'}
 User's level: ${onboardData.level||'Intermediate'}
 Equipment: ${onboardData.equipment.join(', ')||'Various'}
 

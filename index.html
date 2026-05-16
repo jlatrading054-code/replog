@@ -374,6 +374,8 @@ textarea.notes-ta:focus{border-color:var(--accent);}
     </div>
   </div>
   <div class="sm-divider"></div>
+  <button class="sm-signout" onclick="resetApp()" style="color:var(--accent2);">Start over / Reset app</button>
+  <div class="sm-divider"></div>
   <button class="sm-signout" onclick="signOut()">Sign out</button>
 </div>
 
@@ -838,6 +840,25 @@ function showAuthError(form, msg, isSuccess=false){
   el.textContent = msg;
   el.style.display = 'block';
   el.style.color = isSuccess ? '#4D9FFF' : '#ff6b6b';
+}
+
+async function resetApp(){
+  if(!confirm('This will clear your program, session history, and conversations. Are you sure?')) return;
+  // Clear all replog localStorage keys
+  Object.keys(localStorage).filter(k=>k.startsWith('rl_')).forEach(k=>localStorage.removeItem(k));
+  // Unregister service worker
+  if('serviceWorker' in navigator){
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for(const reg of regs) await reg.unregister();
+  }
+  // Reset state
+  activeProgram = null;
+  conversationHistory = [];
+  onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'' };
+  document.getElementById('settingsMenu').classList.remove('open');
+  // Go to onboarding
+  showScreen('screen-onboard');
+  initOnboarding();
 }
 
 async function signOut(){

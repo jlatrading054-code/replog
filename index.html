@@ -1174,7 +1174,9 @@ Include 5-7 exercises per training day. Include rest days. Include core exercise
   try {
     const data = await callCoachRep([{role:'user',content:prompt}], '', 3000);
     clearInterval(interval);
-    const text = data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    // Response is wrapped in data object from Supabase invoke
+    const responseData = data.content ? data : (data.data || data);
+    const text = responseData.content ? responseData.content.filter(c=>c.type==='text').map(c=>c.text).join('') : '';
     // Clean up common JSON issues from AI responses
     let clean = text.replace(/```json|```/g,'').trim();
     // Find the JSON object boundaries
@@ -1827,7 +1829,8 @@ Keep responses concise and actionable — 2-4 sentences max unless they ask for 
   try{
     const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);
     console.log('Coach Rep response:', JSON.stringify(data));
-    const reply=data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    const response = data;
+    const reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
     typing.remove();
     conversationHistory.push({role:'assistant',content:reply});
 
@@ -1838,8 +1841,8 @@ Keep responses concise and actionable — 2-4 sentences max unless they ask for 
     document.getElementById('chatArea').appendChild(bubbleDiv);
 
     // If Coach Rep generated a program, show load button
-    if(data.program){
-      window._pendingProgram = data.program;
+    if(response.program){
+      window._pendingProgram = response.program;
       const wrap = document.createElement('div');
       wrap.className = 'load-program-wrap';
       wrap.innerHTML = `

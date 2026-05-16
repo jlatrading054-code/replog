@@ -370,6 +370,14 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 
 <!-- SETTINGS MENU -->
 <div class="settings-menu" id="settingsMenu">
+  <!-- User info -->
+  <div class="sm-item" style="flex-direction:column;align-items:flex-start;gap:2px;padding-bottom:8px;">
+    <div class="sm-label" id="sm-username" style="color:var(--text);">My Account</div>
+    <div style="font-size:11px;color:var(--muted);" id="sm-email"></div>
+  </div>
+  <div class="sm-divider"></div>
+
+  <!-- Theme -->
   <div class="sm-item">
     <span class="sm-label">Theme</span>
     <div class="theme-toggle-btns">
@@ -377,10 +385,47 @@ textarea.notes-ta:focus{border-color:var(--accent);}
       <button class="tt-btn" id="btn-light" onclick="setTheme('light')">Light</button>
     </div>
   </div>
+
+  <!-- Units -->
+  <div class="sm-item">
+    <span class="sm-label">Units</span>
+    <div class="theme-toggle-btns">
+      <button class="tt-btn active" id="btn-lbs" onclick="setUnits('lbs')">lbs</button>
+      <button class="tt-btn" id="btn-kg" onclick="setUnits('kg')">kg</button>
+    </div>
+  </div>
+
   <div class="sm-divider"></div>
+
+  <!-- Account actions -->
+  <div class="sm-item" onclick="showChangePassword()" style="cursor:pointer;">
+    <span class="sm-label">Change password</span>
+    <span style="color:var(--muted);font-size:12px;">›</span>
+  </div>
+  <div class="sm-item" onclick="exportData()" style="cursor:pointer;">
+    <span class="sm-label">Export my data</span>
+    <span style="color:var(--muted);font-size:12px;">›</span>
+  </div>
+
+  <div class="sm-divider"></div>
+
+  <!-- Danger zone -->
   <button class="sm-signout" onclick="resetApp()" style="color:var(--accent2);">Start over / Reset app</button>
-  <div class="sm-divider"></div>
   <button class="sm-signout" onclick="signOut()">Sign out</button>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div id="pwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:300;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--surface);border:1px solid var(--bd);border-radius:var(--radius);padding:24px;width:100%;max-width:340px;">
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;margin-bottom:16px;">Change password</h3>
+    <div class="form-group"><label class="form-label">New password</label><input class="form-input" type="password" id="new-password" placeholder="Min 6 characters"></div>
+    <div class="form-group"><label class="form-label">Confirm password</label><input class="form-input" type="password" id="confirm-password" placeholder="Repeat password"></div>
+    <div style="color:#ff6b6b;font-size:12px;margin-bottom:10px;display:none;" id="pw-error"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('pwModal').style.display='none'" style="flex:1;background:var(--surface2);border:1px solid var(--bd);border-radius:8px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--muted);">Cancel</button>
+      <button onclick="changePassword()" style="flex:1;background:var(--accent);border:none;border-radius:8px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#fff;">Update</button>
+    </div>
+  </div>
 </div>
 
 <!-- AUTH SCREEN -->
@@ -768,7 +813,72 @@ function lsGet(k){ try{ return JSON.parse(localStorage.getItem('rl_'+k)||'null')
 function lsSet(k,v){ localStorage.setItem('rl_'+k, JSON.stringify(v)); }
 function getSessionKey(d){ return 'session_'+(d||currentDate).toISOString().slice(0,10); }
 
-// ── THEME ──────────────────────────────────────────────────────
+// ── UNITS ──────────────────────────────────────────────────────
+let currentUnits = lsGet('units') || 'lbs';
+
+function setUnits(u){
+  currentUnits = u;
+  lsSet('units', u);
+  document.getElementById('btn-lbs').classList.toggle('active', u==='lbs');
+  document.getElementById('btn-kg').classList.toggle('active', u==='kg');
+  renderToday();
+}
+
+function convertWeight(lbs){
+  if(currentUnits==='kg') return lbs ? (parseFloat(lbs)*0.453592).toFixed(1) : '';
+  return lbs;
+}
+
+function weightLabel(){ return currentUnits; }
+
+// ── EXPORT DATA ────────────────────────────────────────────────
+function exportData(){
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('rl_'));
+  const data = {};
+  keys.forEach(k=>{ data[k.replace('rl_','')] = lsGet(k.replace('rl_','')); });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `replog-export-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('settingsMenu').classList.remove('open');
+}
+
+// ── CHANGE PASSWORD ────────────────────────────────────────────
+function showChangePassword(){
+  document.getElementById('settingsMenu').classList.remove('open');
+  const modal = document.getElementById('pwModal');
+  modal.style.display = 'flex';
+}
+
+async function changePassword(){
+  const newPw = document.getElementById('new-password').value;
+  const confirmPw = document.getElementById('confirm-password').value;
+  const err = document.getElementById('pw-error');
+  if(newPw.length < 6){ err.textContent='Password must be at least 6 characters.'; err.style.display='block'; return; }
+  if(newPw !== confirmPw){ err.textContent='Passwords do not match.'; err.style.display='block'; return; }
+  const {error} = await sb.auth.updateUser({password: newPw});
+  if(error){ err.textContent=error.message; err.style.display='block'; return; }
+  document.getElementById('pwModal').style.display='none';
+  alert('Password updated successfully.');
+}
+
+// ── SETTINGS INIT ──────────────────────────────────────────────
+function initSettings(){
+  const t = lsGet('theme') || 'dark';
+  setTheme(t);
+  const u = lsGet('units') || 'lbs';
+  document.getElementById('btn-lbs').classList.toggle('active', u==='lbs');
+  document.getElementById('btn-kg').classList.toggle('active', u==='kg');
+  if(currentUser){
+    const emailEl = document.getElementById('sm-email');
+    const nameEl = document.getElementById('sm-username');
+    if(emailEl) emailEl.textContent = currentUser.email || '';
+    if(nameEl) nameEl.textContent = currentUser.user_metadata?.full_name || 'My Account';
+  }
+}
 function setTheme(t){
   document.documentElement.setAttribute('data-theme', t==='light'?'light':'');
   document.getElementById('btn-dark').classList.toggle('active', t==='dark');
@@ -1199,13 +1309,12 @@ function initApp(){
     const el = document.getElementById(id);
     if(el) el.textContent = initials;
   });
+  initSettings();
   renderWeekStrip();
   renderToday();
   renderStreak();
-  // Load existing conversations
   const saved = lsGet('conversations');
   if(saved) conversationHistory = saved;
-  // Service worker
   if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 
@@ -1364,10 +1473,10 @@ function renderExBlock(ex, ei, saved){
     ${infoPanel}
     <div class="ex-body">`;
   if(prevBest) b+=`<div class="prev-best">Last best: <span>${prevBest}</span></div>`;
-  b+=`<div class="set-hds"><div class="set-hd"></div><div class="set-hd">${colLabel}</div><div class="set-hd">${isBW?'BW':'Wt lb'}</div><div class="set-hd">&#10003;</div></div>
+  b+=`<div class="set-hds"><div class="set-hd"></div><div class="set-hd">${colLabel}</div><div class="set-hd">${isBW?'BW':weightLabel()}</div><div class="set-hd">&#10003;</div></div>
     <tbody id="sets-${ei}">`;
   savedSets.forEach((s,si)=>{
-    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':'lb'}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="toggleDone(${ei},${si})">${s.done?'✓':''}</div></div>`;
+    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="toggleDone(${ei},${si})">${s.done?'✓':''}</div></div>`;
   });
   b+=`</tbody>
     <button class="add-set-btn" onclick="addSet(${ei},event)">+ Add set</button>
@@ -1616,7 +1725,7 @@ function loadProgramFromChat(program, btn){
 
   // Update button to show success
   btn.style.display = 'none';
-  const successEl = btn.nextElementSibling;
+  const successEl = btn.parentElement.querySelector('.load-program-success');
   if(successEl) successEl.style.display = 'block';
 
   // Refresh today tab
@@ -1730,13 +1839,14 @@ Keep responses concise and actionable — 2-4 sentences max unless they ask for 
 
     // If Coach Rep generated a program, show load button
     if(data.program){
+      window._pendingProgram = data.program;
       const wrap = document.createElement('div');
       wrap.className = 'load-program-wrap';
       wrap.innerHTML = `
-        <button class="load-program-btn" onclick="loadProgramFromChat(${JSON.stringify(data.program).replace(/"/g,'&quot;')}, this)">
+        <button class="load-program-btn" onclick="loadProgramFromChat(window._pendingProgram, this)">
           <img src="coach-rep.png" style="width:24px;height:24px;border-radius:50%;object-fit:cover;object-position:center top;"> Load this program into RepLog
         </button>
-        <div class="load-program-success" id="loadSuccess">✓ Program loaded — check Today tab!</div>
+        <div class="load-program-success">✓ Program loaded — check Today tab!</div>
       `;
       document.getElementById('chatArea').appendChild(wrap);
     }

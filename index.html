@@ -1828,8 +1828,10 @@ Keep responses concise and actionable — 2-4 sentences max unless they ask for 
 
   try{
     const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);
-    console.log('Coach Rep response:', JSON.stringify(data));
-    const response = data;
+    console.log('Raw response:', JSON.stringify(data));
+    console.log('Program field:', data.program, 'Data.data:', data.data?.program);
+    const response = data.content ? data : (data.data || data);
+    console.log('Using response:', response.content ? 'direct' : 'wrapped');
     const reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
     typing.remove();
     conversationHistory.push({role:'assistant',content:reply});

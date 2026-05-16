@@ -1477,7 +1477,7 @@ ${recentSessions||'No sessions logged yet'}
 Keep responses concise and actionable — 2-4 sentences max unless they ask for a full program or detailed explanation. Be real, not corporate. If they're struggling, acknowledge it. If they're crushing it, call it out. Always end with something actionable.`;
 
   try{
-    const data=await callCoachRep(conversationHistory, systemPrompt, 800, true);
+    const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);
     console.log('Coach Rep response:', JSON.stringify(data));
     const reply=data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
     typing.remove();

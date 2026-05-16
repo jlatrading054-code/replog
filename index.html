@@ -279,7 +279,8 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 /* ── COACH REP VIEW ───────────────────────────────────────────── */
 .coach-wrap{display:flex;flex-direction:column;height:calc(100vh - 64px - env(safe-area-inset-bottom));}
 .coach-header{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.coach-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--red2),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);}
+.coach-av{width:44px;height:44px;border-radius:50%;background:var(--surface2);overflow:hidden;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);flex-shrink:0;}
+.coach-av img{width:100%;height:100%;object-fit:cover;object-position:center top;}
 .coach-info{}
 .coach-nm{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;line-height:1;}
 .coach-nm span{color:var(--accent);}
@@ -478,7 +479,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
   <!-- Step 5: Building -->
   <div class="onboard-step" id="step-building">
     <div class="coach-building">
-      <div class="cb-spinner">🏋️</div>
+      <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid var(--accent);"><img src="coach-rep.png" alt="Coach Rep" style="width:100%;height:100%;object-fit:cover;object-position:center top;"></div>
       <div class="cb-title">Coach Rep is building your program</div>
       <div class="cb-sub" id="buildingMsg">Analyzing your goals and equipment…</div>
     </div>
@@ -527,7 +528,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
     <div id="tab-coach" class="tab-content" style="display:none;">
       <div class="coach-wrap" id="coachWrap">
         <div class="app-header coach-header">
-          <div class="coach-av">🏋️</div>
+          <div class="coach-av"><img src="coach-rep.png" alt="Coach Rep"></div>
           <div class="coach-info">
             <div class="coach-nm"><span>Coach</span> Rep</div>
             <div class="coach-status">● Online — ready to help</div>
@@ -565,7 +566,13 @@ textarea.notes-ta:focus{border-color:var(--accent);}
       Stats<div class="ni-dot"></div>
     </button>
     <button class="ni" onclick="showTab('coach')" id="nav-coach">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M6 8 Q12 3 18 8"/>
+        <rect x="9.5" y="4" width="5" height="2.5" rx="1" fill="currentColor" stroke="none"/>
+        <path d="M8 12 Q12 11 16 12 L17 20 Q12 22 7 20 Z"/>
+        <path d="M13 14 Q16 14.5 17 13.5"/>
+      </svg>
       Coach Rep<div class="ni-dot"></div>
     </button>
   </nav>
@@ -1495,7 +1502,7 @@ Keep responses concise and actionable — 2-4 sentences max unless they ask for 
       wrap.className = 'load-program-wrap';
       wrap.innerHTML = `
         <button class="load-program-btn" onclick="loadProgramFromChat(${JSON.stringify(data.program).replace(/"/g,'&quot;')}, this)">
-          🏋️ Load this program into RepLog
+          <img src="coach-rep.png" style="width:24px;height:24px;border-radius:50%;object-fit:cover;object-position:center top;"> Load this program into RepLog
         </button>
         <div class="load-program-success" id="loadSuccess">✓ Program loaded — check Today tab!</div>
       `;

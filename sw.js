@@ -12,6 +12,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Never cache POST requests
+  if (e.request.method !== 'GET') return;
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;

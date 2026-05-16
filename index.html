@@ -410,13 +410,17 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 
 <!-- ONBOARDING SCREEN -->
 <div class="screen" id="screen-onboard" style="padding:20px;max-width:480px;margin:0 auto;width:100%;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;border:2px solid var(--accent);flex-shrink:0;"><img src="coach-rep.png" alt="Coach Rep" style="width:100%;height:100%;object-fit:cover;object-position:center top;"></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;">Coach Rep is getting to know you</div>
+  </div>
   <div class="onboard-progress" id="onboardProgress"></div>
 
-  <!-- Step 1: Goal -->
+  <!-- Step 1: Goals -->
   <div class="onboard-step active" id="step-1">
     <div class="onboard-header">
       <h2>What are your goals?</h2>
-      <p>Select all that apply — Coach Rep will balance your program around them.</p>
+      <p>Select all that apply — Coach Rep will balance your program around everything you want to achieve.</p>
     </div>
     <div class="option-grid">
       <button class="option-btn" onclick="toggleGoal(this,'Build strength')"><div class="opt-icon">🏋️</div><div class="opt-label">Build strength</div><div class="opt-sub">Get stronger lifts</div></button>
@@ -444,11 +448,64 @@ textarea.notes-ta:focus{border-color:var(--accent);}
     <button class="onboard-next" onclick="nextStep(3)">Continue</button>
   </div>
 
-  <!-- Step 3: Equipment -->
+  <!-- Step 3: Personal stats -->
   <div class="onboard-step" id="step-3">
     <div class="onboard-header">
+      <h2>About you</h2>
+      <p>Coach Rep uses this to calibrate intensity, volume, and recovery for your age and body.</p>
+    </div>
+    <div class="form-group"><label class="form-label">Age</label><input class="form-input" type="number" id="ob-age" placeholder="e.g. 35" min="16" max="80" onchange="onboardData.age=this.value"></div>
+    <div class="form-group"><label class="form-label">Weight (lbs)</label><input class="form-input" type="number" id="ob-weight" placeholder="e.g. 185" min="80" max="400" onchange="onboardData.weight=this.value"></div>
+    <div class="form-group"><label class="form-label">Height</label>
+      <div style="display:flex;gap:8px;">
+        <input class="form-input" type="number" id="ob-feet" placeholder="ft" min="4" max="7" style="width:80px;" onchange="onboardData.height_ft=this.value">
+        <input class="form-input" type="number" id="ob-inches" placeholder="in" min="0" max="11" style="width:80px;" onchange="onboardData.height_in=this.value">
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Biological sex</label>
+      <div style="display:flex;gap:8px;">
+        <button class="option-btn" style="flex:1;padding:10px;" onclick="selectOption(this,'sex','Male')"><div class="opt-label">Male</div></button>
+        <button class="option-btn" style="flex:1;padding:10px;" onclick="selectOption(this,'sex','Female')"><div class="opt-label">Female</div></button>
+      </div>
+    </div>
+    <button class="onboard-next" onclick="nextStep(4)">Continue</button>
+  </div>
+
+  <!-- Step 4: Schedule -->
+  <div class="onboard-step" id="step-4">
+    <div class="onboard-header">
+      <h2>Your schedule</h2>
+      <p>Coach Rep will build around your life, not the other way around.</p>
+    </div>
+    <div class="form-group"><label class="form-label">Days per week you can train</label>
+      <div class="option-grid" style="grid-template-columns:repeat(4,1fr);">
+        <button class="option-btn" onclick="selectOption(this,'days','3')"><div class="opt-label">3</div><div class="opt-sub">days</div></button>
+        <button class="option-btn" onclick="selectOption(this,'days','4')"><div class="opt-label">4</div><div class="opt-sub">days</div></button>
+        <button class="option-btn" onclick="selectOption(this,'days','5')"><div class="opt-label">5</div><div class="opt-sub">days</div></button>
+        <button class="option-btn" onclick="selectOption(this,'days','6')"><div class="opt-label">6</div><div class="opt-sub">days</div></button>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">How long per session?</label>
+      <div class="option-grid" style="grid-template-columns:repeat(3,1fr);">
+        <button class="option-btn" onclick="selectOption(this,'session_length','30–45 min')"><div class="opt-label">30–45</div><div class="opt-sub">min</div></button>
+        <button class="option-btn" onclick="selectOption(this,'session_length','45–60 min')"><div class="opt-label">45–60</div><div class="opt-sub">min</div></button>
+        <button class="option-btn" onclick="selectOption(this,'session_length','60–90 min')"><div class="opt-label">60–90</div><div class="opt-sub">min</div></button>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Do you have an irregular schedule? (shift work, travel, etc.)</label>
+      <div style="display:flex;gap:8px;">
+        <button class="option-btn" style="flex:1;padding:10px;" onclick="selectOption(this,'irregular_schedule','Yes')"><div class="opt-label">Yes</div></button>
+        <button class="option-btn" style="flex:1;padding:10px;" onclick="selectOption(this,'irregular_schedule','No')"><div class="opt-label">No</div></button>
+      </div>
+    </div>
+    <button class="onboard-next" onclick="nextStep(5)">Continue</button>
+  </div>
+
+  <!-- Step 5: Equipment -->
+  <div class="onboard-step" id="step-5">
+    <div class="onboard-header">
       <h2>What equipment do you have?</h2>
-      <p>Select all that apply.</p>
+      <p>Select all that apply — Coach Rep will only program what you can actually use.</p>
     </div>
     <div class="option-grid">
       <button class="option-btn" onclick="toggleEquip(this,'Barbell + plates')"><div class="opt-icon">🏗️</div><div class="opt-label">Barbell</div><div class="opt-sub">+ plates</div></button>
@@ -456,32 +513,111 @@ textarea.notes-ta:focus{border-color:var(--accent);}
       <button class="option-btn" onclick="toggleEquip(this,'Kettlebells')"><div class="opt-icon">⚫</div><div class="opt-label">Kettlebells</div><div class="opt-sub">Any weight</div></button>
       <button class="option-btn" onclick="toggleEquip(this,'Pull-up bar')"><div class="opt-icon">🔝</div><div class="opt-label">Pull-up bar</div><div class="opt-sub">Doorway or rack</div></button>
       <button class="option-btn" onclick="toggleEquip(this,'Resistance bands')"><div class="opt-icon">🔄</div><div class="opt-label">Bands</div><div class="opt-sub">Resistance bands</div></button>
+      <button class="option-btn" onclick="toggleEquip(this,'Cable machine')"><div class="opt-icon">🔗</div><div class="opt-label">Cable machine</div><div class="opt-sub">Full gym</div></button>
+      <button class="option-btn" onclick="toggleEquip(this,'Cardio equipment')"><div class="opt-icon">🚴</div><div class="opt-label">Cardio equip</div><div class="opt-sub">Bike/treadmill/rower</div></button>
       <button class="option-btn" onclick="toggleEquip(this,'Bodyweight only')"><div class="opt-icon">🧘</div><div class="opt-label">Bodyweight</div><div class="opt-sub">No equipment</div></button>
     </div>
-    <button class="onboard-next" onclick="nextStep(4)">Continue</button>
+    <button class="onboard-next" onclick="nextStep(6)">Continue</button>
   </div>
 
-  <!-- Step 4: Days -->
-  <div class="onboard-step" id="step-4">
+  <!-- Step 6: Health -->
+  <div class="onboard-step" id="step-6">
     <div class="onboard-header">
-      <h2>Days per week?</h2>
-      <p>How many days can you realistically commit to training?</p>
+      <h2>Health & limitations</h2>
+      <p>This keeps Coach Rep from programming things that could hurt you. Be specific — it matters.</p>
     </div>
-    <div class="option-grid">
-      <button class="option-btn" onclick="selectOption(this,'days','3')"><div class="opt-icon">3️⃣</div><div class="opt-label">3 days</div><div class="opt-sub">Solid foundation</div></button>
-      <button class="option-btn" onclick="selectOption(this,'days','4')"><div class="opt-icon">4️⃣</div><div class="opt-label">4 days</div><div class="opt-sub">Good balance</div></button>
-      <button class="option-btn" onclick="selectOption(this,'days','5')"><div class="opt-icon">5️⃣</div><div class="opt-label">5 days</div><div class="opt-sub">High volume</div></button>
-      <button class="option-btn" onclick="selectOption(this,'days','6')"><div class="opt-icon">6️⃣</div><div class="opt-label">6 days</div><div class="opt-sub">Max frequency</div></button>
+    <div class="form-group">
+      <label class="form-label">Any injuries or problem areas?</label>
+      <div class="option-grid">
+        <button class="option-btn" onclick="toggleHealth(this,'Lower back')"><div class="opt-icon">🔴</div><div class="opt-label">Lower back</div></button>
+        <button class="option-btn" onclick="toggleHealth(this,'Knees')"><div class="opt-icon">🔴</div><div class="opt-label">Knees</div></button>
+        <button class="option-btn" onclick="toggleHealth(this,'Shoulders')"><div class="opt-icon">🔴</div><div class="opt-label">Shoulders</div></button>
+        <button class="option-btn" onclick="toggleHealth(this,'Hips')"><div class="opt-icon">🔴</div><div class="opt-label">Hips</div></button>
+        <button class="option-btn" onclick="toggleHealth(this,'Neck')"><div class="opt-icon">🔴</div><div class="opt-label">Neck</div></button>
+        <button class="option-btn" onclick="toggleHealth(this,'None')"><div class="opt-icon">✅</div><div class="opt-label">None</div></button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Any health conditions Coach Rep should know about?</label>
+      <div class="option-grid">
+        <button class="option-btn" onclick="toggleCondition(this,'High blood pressure')"><div class="opt-label">High blood pressure</div></button>
+        <button class="option-btn" onclick="toggleCondition(this,'Heart condition')"><div class="opt-label">Heart condition</div></button>
+        <button class="option-btn" onclick="toggleCondition(this,'Diabetes')"><div class="opt-label">Diabetes</div></button>
+        <button class="option-btn" onclick="toggleCondition(this,'Joint issues')"><div class="opt-label">Joint issues</div></button>
+        <button class="option-btn" onclick="toggleCondition(this,'None')"><div class="opt-label">None</div></button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Anything else Coach Rep should know? (optional)</label>
+      <textarea class="form-input" id="ob-health-notes" placeholder="e.g. recovering from surgery, recent illness, doctor restrictions…" style="min-height:60px;resize:none;" onchange="onboardData.health_notes=this.value"></textarea>
+    </div>
+    <button class="onboard-next" onclick="nextStep(7)">Continue</button>
+  </div>
+
+  <!-- Step 7: Training history -->
+  <div class="onboard-step" id="step-7">
+    <div class="onboard-header">
+      <h2>Training history</h2>
+      <p>What you've tried before helps Coach Rep build something better this time.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What style of training have you done before?</label>
+      <div class="option-grid">
+        <button class="option-btn" onclick="toggleHistory(this,'Powerlifting')"><div class="opt-label">Powerlifting</div><div class="opt-sub">Heavy compounds</div></button>
+        <button class="option-btn" onclick="toggleHistory(this,'Bodybuilding')"><div class="opt-label">Bodybuilding</div><div class="opt-sub">Pump & volume</div></button>
+        <button class="option-btn" onclick="toggleHistory(this,'CrossFit')"><div class="opt-label">CrossFit</div><div class="opt-sub">Functional fitness</div></button>
+        <button class="option-btn" onclick="toggleHistory(this,'Kettlebell')"><div class="opt-label">Kettlebell</div><div class="opt-sub">KB focused</div></button>
+        <button class="option-btn" onclick="toggleHistory(this,'Running / cardio')"><div class="opt-label">Running / cardio</div><div class="opt-sub">Endurance base</div></button>
+        <button class="option-btn" onclick="toggleHistory(this,'Nothing consistent')"><div class="opt-label">Nothing consistent</div><div class="opt-sub">Starting fresh</div></button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What's worked well for you in the past? (optional)</label>
+      <textarea class="form-input" id="ob-what-worked" placeholder="e.g. heavy lifting, morning workouts, structured programs…" style="min-height:55px;resize:none;" onchange="onboardData.what_worked=this.value"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">What hasn't worked or what do you hate doing? (optional)</label>
+      <textarea class="form-input" id="ob-what-didnt" placeholder="e.g. running, high rep isolation work, early morning sessions…" style="min-height:55px;resize:none;" onchange="onboardData.what_didnt=this.value"></textarea>
+    </div>
+    <button class="onboard-next" onclick="nextStep(8)">Continue</button>
+  </div>
+
+  <!-- Step 8: Preferences -->
+  <div class="onboard-step" id="step-8">
+    <div class="onboard-header">
+      <h2>Your preferences</h2>
+      <p>Last step — this makes your program feel like it was made for you.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Training style preference</label>
+      <div class="option-grid">
+        <button class="option-btn" onclick="selectOption(this,'training_style','Heavy & low reps')"><div class="opt-label">Heavy</div><div class="opt-sub">Low reps, max load</div></button>
+        <button class="option-btn" onclick="selectOption(this,'training_style','Moderate & balanced')"><div class="opt-label">Balanced</div><div class="opt-sub">Mix of both</div></button>
+        <button class="option-btn" onclick="selectOption(this,'training_style','Lighter & high reps')"><div class="opt-label">Volume</div><div class="opt-sub">Higher reps, feel</div></button>
+        <button class="option-btn" onclick="selectOption(this,'training_style','Circuit & metabolic')"><div class="opt-label">Circuit</div><div class="opt-sub">Fast paced</div></button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exercises you love (optional)</label>
+      <textarea class="form-input" id="ob-love" placeholder="e.g. deadlifts, KB swings, pull-ups, bench press…" style="min-height:50px;resize:none;" onchange="onboardData.love_exercises=this.value"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exercises you refuse to do (optional)</label>
+      <textarea class="form-input" id="ob-hate" placeholder="e.g. burpees, running, leg press…" style="min-height:50px;resize:none;" onchange="onboardData.hate_exercises=this.value"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Anything else you want Coach Rep to know?</label>
+      <textarea class="form-input" id="ob-other" placeholder="e.g. I'm a firefighter on 48hr shifts, I train at home, I want to compete someday…" style="min-height:55px;resize:none;" onchange="onboardData.other_notes=this.value"></textarea>
     </div>
     <button class="onboard-next" onclick="buildProgram()">Build my program</button>
   </div>
 
-  <!-- Step 5: Building -->
+  <!-- Building screen -->
   <div class="onboard-step" id="step-building">
     <div class="coach-building">
       <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin:0 auto 16px;border:3px solid var(--accent);"><img src="coach-rep.png" alt="Coach Rep" style="width:100%;height:100%;object-fit:cover;object-position:center top;"></div>
       <div class="cb-title">Coach Rep is building your program</div>
-      <div class="cb-sub" id="buildingMsg">Analyzing your goals and equipment…</div>
+      <div class="cb-sub" id="buildingMsg">Reading your profile…</div>
     </div>
   </div>
 </div>
@@ -599,7 +735,7 @@ function getExerciseInfo(name){
 // ── STATE ──────────────────────────────────────────────────────
 let currentUser = null;
 let currentDate = new Date();
-let onboardData = { goals:[], level:'', equipment:[], days:'5' };
+let onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'' };
 let activeProgram = null;
 let conversationHistory = [];
 let isGuest = false;
@@ -749,7 +885,7 @@ function showScreen(id){
 
 // ── ONBOARDING ─────────────────────────────────────────────────
 function initOnboarding(){
-  const steps = 4;
+  const steps = 8;
   const prog = document.getElementById('onboardProgress');
   prog.innerHTML = '';
   for(let i=1;i<=steps;i++){
@@ -761,8 +897,8 @@ function initOnboarding(){
 }
 
 function selectOption(btn, key, val){
-  const parent = btn.closest('.option-grid');
-  parent.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+  const parent = btn.closest('.option-grid') || btn.closest('.form-group');
+  if(parent) parent.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   onboardData[key] = val;
 }
@@ -781,6 +917,27 @@ function toggleEquip(btn, val){
   else onboardData.equipment.push(val);
 }
 
+function toggleHealth(btn, val){
+  btn.classList.toggle('selected');
+  const idx = onboardData.injuries.indexOf(val);
+  if(idx>=0) onboardData.injuries.splice(idx,1);
+  else onboardData.injuries.push(val);
+}
+
+function toggleCondition(btn, val){
+  btn.classList.toggle('selected');
+  const idx = onboardData.conditions.indexOf(val);
+  if(idx>=0) onboardData.conditions.splice(idx,1);
+  else onboardData.conditions.push(val);
+}
+
+function toggleHistory(btn, val){
+  btn.classList.toggle('selected');
+  const idx = onboardData.training_history.indexOf(val);
+  if(idx>=0) onboardData.training_history.splice(idx,1);
+  else onboardData.training_history.push(val);
+}
+
 function nextStep(stepNum){
   document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('step-'+stepNum).classList.add('active');
@@ -789,15 +946,17 @@ function nextStep(stepNum){
     if(i+1 < stepNum) d.classList.add('done');
     if(i+1 === stepNum) d.classList.add('active');
   });
+  window.scrollTo(0,0);
 }
 
 async function buildProgram(){
   document.querySelectorAll('.onboard-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('step-building').classList.add('active');
   const msgs = [
-    'Analyzing your goals and equipment…',
+    'Reading your profile…',
+    'Accounting for your age and recovery needs…',
+    'Programming around your injuries and preferences…',
     'Designing your weekly split…',
-    'Programming sets, reps, and progressions…',
     'Coach Rep is putting the finishing touches…'
   ];
   let mi=0;
@@ -805,15 +964,34 @@ async function buildProgram(){
   const interval = setInterval(()=>{ if(mi<msgs.length) msgEl.textContent=msgs[mi++]; },1200);
 
   // Call Anthropic API via Coach Rep to generate program
-  const prompt = `You are Coach Rep, an expert strength and conditioning coach inside the RepLog fitness app.
+  const heightStr = onboardData.height_ft ? `${onboardData.height_ft}'${onboardData.height_in||0}"` : 'not provided';
+  const prompt = `You are Coach Rep, an expert strength and conditioning coach inside the RepLog fitness app. Build a complete personalized workout program for this person based on their full profile.
 
-A new user has just completed onboarding. Build them a complete weekly workout program based on their profile:
-- Goal: ${onboardData.goals.length>0?onboardData.goals.join(', '):'General fitness'}
-- Experience level: ${onboardData.level}  
+PROFILE:
+- Goals: ${onboardData.goals.length>0?onboardData.goals.join(', '):'General fitness'}
+- Experience level: ${onboardData.level||'Intermediate'}
+- Age: ${onboardData.age||'not provided'}
+- Weight: ${onboardData.weight?onboardData.weight+' lbs':'not provided'}
+- Height: ${heightStr}
+- Sex: ${onboardData.sex||'not provided'}
+- Training days per week: ${onboardData.days}
+- Session length: ${onboardData.session_length||'45-60 min'}
+- Irregular schedule: ${onboardData.irregular_schedule||'No'}
 - Available equipment: ${onboardData.equipment.join(', ')||'bodyweight only'}
-- Days per week: ${onboardData.days}
+- Injuries / problem areas: ${onboardData.injuries.join(', ')||'none'}
+- Health conditions: ${onboardData.conditions.join(', ')||'none'}
+- Health notes: ${onboardData.health_notes||'none'}
+- Training history: ${onboardData.training_history.join(', ')||'not provided'}
+- What has worked before: ${onboardData.what_worked||'not provided'}
+- What has not worked / hates: ${onboardData.what_didnt||'not provided'}
+- Training style preference: ${onboardData.training_style||'balanced'}
+- Exercises they love: ${onboardData.love_exercises||'not specified'}
+- Exercises they refuse: ${onboardData.hate_exercises||'not specified'}
+- Additional notes: ${onboardData.other_notes||'none'}
 
-Return ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after. Use only double quotes. No apostrophes in string values — use alternate wording instead. Valid JSON only:
+Build a program that is genuinely tailored to this specific person. Account for their age, any injuries, their schedule constraints, and their preferences. Do not build a generic program — use their profile to make real decisions.
+
+Return ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after. Use only double quotes. No apostrophes in string values. Valid JSON only:
 {
   "name": "Program name",
   "description": "1 sentence description",
@@ -1467,15 +1645,22 @@ async function sendMessage(){
 
   const systemPrompt=`You are Coach Rep, an encouraging, knowledgeable, and direct AI strength coach inside the RepLog fitness app. You are conversational, supportive, and data-driven.
 
-User's program: ${activeProgram?activeProgram.name:'Unknown'}
-User's goal: ${onboardData.goals.join(', ')||'General fitness'}
-User's level: ${onboardData.level||'Intermediate'}
-Equipment: ${onboardData.equipment.join(', ')||'Various'}
+User profile:
+- Program: ${activeProgram?activeProgram.name:'Unknown'}
+- Goals: ${onboardData.goals.join(', ')||'General fitness'}
+- Level: ${onboardData.level||'Intermediate'}
+- Age: ${onboardData.age||'unknown'} | Weight: ${onboardData.weight?onboardData.weight+' lbs':'unknown'} | Sex: ${onboardData.sex||'unknown'}
+- Equipment: ${onboardData.equipment.join(', ')||'Various'}
+- Session length: ${onboardData.session_length||'45-60 min'} | Days/week: ${onboardData.days||5}
+- Injuries: ${onboardData.injuries.join(', ')||'none'} | Conditions: ${onboardData.conditions.join(', ')||'none'}
+- Loves: ${onboardData.love_exercises||'not specified'} | Avoids: ${onboardData.hate_exercises||'not specified'}
+- Training style: ${onboardData.training_style||'balanced'}
+- Notes: ${onboardData.other_notes||'none'}
 
 Recent training sessions:
 ${recentSessions||'No sessions logged yet'}
 
-Keep responses concise and actionable — 2-4 sentences max unless they ask for a full program or detailed explanation. Be real, not corporate. If they're struggling, acknowledge it. If they're crushing it, call it out. Always end with something actionable.`;
+Keep responses concise and actionable — 2-4 sentences max unless they ask for a full program or detailed explanation. Be real, not corporate. If they are struggling, acknowledge it. If they are crushing it, call it out. Always end with something actionable.`;
 
   try{
     const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);

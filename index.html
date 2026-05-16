@@ -119,7 +119,11 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red2),var(--blue2));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:#fff;cursor:pointer;}
 
 /* ── WEEK STRIP ───────────────────────────────────────────────── */
-.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:10px 12px 0;}
+.week-nav{display:flex;align-items:center;gap:4px;padding:10px 12px 0;}
+.week-nav-btn{background:var(--surface);border:1px solid var(--bd);border-radius:6px;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:14px;padding:0;}
+.week-nav-btn:active{background:var(--surface2);color:var(--text);}
+.week-nav-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;text-align:center;flex:1;}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:4px 12px 0;}
 .dc{background:var(--surface);border:1px solid var(--bd);border-radius:8px;padding:6px 2px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .dc.today{border-color:var(--accent);background:rgba(204,41,54,0.08);}
 .dc.partial{border-color:rgba(77,159,255,0.4);}
@@ -637,6 +641,11 @@ textarea.notes-ta:focus{border-color:var(--accent);}
           <div class="avatar" id="userAvatar" onclick="toggleSettings()">?</div>
         </div>
       </div>
+      <div class="week-nav">
+        <button class="week-nav-btn" onclick="changeWeek(-1)">&#8249;</button>
+        <div class="week-nav-label" id="weekNavLabel"></div>
+        <button class="week-nav-btn" onclick="changeWeek(1)">&#8250;</button>
+      </div>
       <div class="week-strip" id="weekStrip"></div>
       <div id="todayContent"></div>
     </div>
@@ -737,6 +746,18 @@ function getExerciseInfo(name){
 // ── STATE ──────────────────────────────────────────────────────
 let currentUser = null;
 let currentDate = new Date();
+let weekOffset = 0;
+
+function changeWeek(dir){
+  weekOffset += dir;
+  // Update currentDate to the same day of week in the new week
+  const today = new Date();
+  const newDate = new Date(today);
+  newDate.setDate(today.getDate() + (weekOffset * 7));
+  currentDate = newDate;
+  renderWeekStrip();
+  renderToday();
+}
 let onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'' };
 let activeProgram = null;
 let conversationHistory = [];
@@ -1206,14 +1227,24 @@ function renderWeekStrip(){
   const strip = document.getElementById('weekStrip');
   if(!strip) return;
   const today = new Date();
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay() + (weekOffset * 7));
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const label = document.getElementById('weekNavLabel');
+  if(label){
+    const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate()+6);
+    if(weekOffset===0) label.textContent='This week';
+    else if(weekOffset===-1) label.textContent='Last week';
+    else if(weekOffset===1) label.textContent='Next week';
+    else label.textContent=`${months[weekStart.getMonth()]} ${weekStart.getDate()} – ${months[weekEnd.getMonth()]} ${weekEnd.getDate()}`;
+  }
   const days=['SUN','MON','TUE','WED','THU','FRI','SAT'];
   let html='';
   for(let i=0;i<7;i++){
-    const d = new Date(today);
-    d.setDate(today.getDate()-today.getDay()+i);
+    const d = new Date(weekStart); d.setDate(weekStart.getDate()+i);
     const key = getSessionKey(d);
     const session = lsGet(key);
-    const isToday = i===today.getDay();
+    const isToday = d.toDateString()===today.toDateString();
     const isSelected = d.toDateString()===currentDate.toDateString();
     let state = '';
     if(session){
@@ -1234,8 +1265,9 @@ function renderWeekStrip(){
 
 function selectDay(i){
   const today=new Date();
-  const d=new Date(today);
-  d.setDate(today.getDate()-today.getDay()+i);
+  const weekStart=new Date(today);
+  weekStart.setDate(today.getDate()-today.getDay()+(weekOffset*7));
+  const d=new Date(weekStart); d.setDate(weekStart.getDate()+i);
   currentDate=d;
   renderWeekStrip();
   renderToday();

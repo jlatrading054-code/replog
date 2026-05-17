@@ -195,7 +195,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .si{background:var(--surface2);border:1px solid var(--bd);border-radius:6px;padding:5px 3px;text-align:center;font-size:13px;color:var(--text);outline:none;width:100%;}
 .si:focus{border-color:var(--accent);}
 .si:disabled{opacity:0.25;}
-.sc{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
+.sc{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .sc.done{background:var(--accent);color:#fff;font-size:12px;font-weight:700;}
 .sc.undone{border:1.5px solid var(--bd);}
 .add-set-btn{margin-top:8px;width:100%;background:var(--surface2);border:1px dashed var(--bd);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.05em;padding:7px;text-transform:uppercase;}
@@ -1542,7 +1542,7 @@ function renderExBlock(ex, ei, saved){
   b+=`<div class="set-hds"><div class="set-hd"></div><div class="set-hd">${colLabel}</div><div class="set-hd">${isBW?'BW':weightLabel()}</div><div class="set-hd">&#10003;</div></div>
     <tbody id="sets-${ei}">`;
   savedSets.forEach((s,si)=>{
-    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="toggleDone(${ei},${si})">${s.done?'✓':''}</div></div>`;
+    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="event.stopPropagation();toggleDone(${ei},${si},this)">${s.done?'✓':''}</div></div>`;
   });
   b+=`</tbody>
     <button class="add-set-btn" onclick="addSet(${ei},event)">+ Add set</button>
@@ -1564,11 +1564,15 @@ function toggleInfo(ei){
 
 function toggleEx(ei){ document.getElementById('ex-'+ei).classList.toggle('open'); }
 
-function toggleDone(ei,si){
-  const rows=document.querySelectorAll(`#sets-${ei} .set-row`);
-  if(rows[si]){
-    const sc=rows[si].querySelector('.sc');
-    if(sc){ sc.classList.toggle('done'); sc.classList.toggle('undone'); sc.textContent=sc.classList.contains('done')?'✓':''; }
+function toggleDone(ei, si, el){
+  if(!el) {
+    const rows = document.querySelectorAll(`#sets-${ei} .set-row`);
+    if(rows[si]) el = rows[si].querySelector('.sc');
+  }
+  if(el){
+    el.classList.toggle('done');
+    el.classList.toggle('undone');
+    el.textContent = el.classList.contains('done') ? '✓' : '';
   }
   autoSave();
   checkSessionComplete();

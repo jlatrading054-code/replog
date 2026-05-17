@@ -1379,6 +1379,7 @@ function renderWeekStrip(){
 }
 
 function selectDay(i){
+  window._overrideDayPlan = null;
   const today=new Date();
   const weekStart=new Date(today);
   weekStart.setDate(today.getDate()-today.getDay()+(weekOffset*7));
@@ -1389,13 +1390,72 @@ function selectDay(i){
 }
 
 // ── TODAY ──────────────────────────────────────────────────────
+function logAnywayPrompt(){
+  if(!activeProgram) return;
+  const trainingDays = activeProgram.days.filter(d=>d.type!=='rest');
+  if(trainingDays.length===0) return;
+  const content = document.getElementById('todayContent');
+  let html = `<div class="rest-day"><div class="rd-title" style="margin-bottom:14px;">Which workout do you want to log?</div>`;
+  trainingDays.forEach(day=>{
+    html+=`<button onclick="logAnyway(${day.day_of_week})" style="width:100%;margin-bottom:8px;background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${day.name}</button>`;
+  });
+  html+=`<button onclick="renderToday()" style="width:100%;margin-top:4px;background:transparent;border:1px solid var(--bd);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--muted);">Cancel — keep rest day</button></div>`;
+  content.innerHTML=html;
+}
+
+function logAnyway(dow){
+  // Temporarily override the day plan to show chosen workout
+  const dayPlan = activeProgram.days.find(d=>d.day_of_week===dow);
+  if(!dayPlan) return;
+  const key = getSessionKey(currentDate);
+  const saved = lsGet(key)||{};
+  const exercises = dayPlan.exercises||[];
+  const mainEx = exercises.filter(e=>!e.is_core);
+  const coreEx = exercises.filter(e=>e.is_core);
+  const content = document.getElementById('todayContent');
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  let html=`<div class="today-hd">
+    <div><div class="today-title">${dayPlan.name}</div><div class="today-meta">${months[currentDate.getMonth()]} ${currentDate.getDate()} · Extra session</div></div>
+    <div class="today-badge badge-str">Custom</div>
+  </div>`;
+
+  const totalSets = exercises.reduce((a,e)=>a+(e.default_sets||3),0);
+  html+=`<div class="session-progress">
+    <div class="sp-row"><div class="sp-label">Session progress</div><div class="sp-count">0 / ${totalSets} sets</div></div>
+    <div class="sp-track"><div class="sp-fill" id="spFill" style="width:0%"></div></div>
+  </div>`;
+
+  html+=`<div class="ex-section">`;
+  if(mainEx.length>0){
+    html+=`<div class="sec-lbl">Main work</div>`;
+    mainEx.forEach(ex=>{ html+=renderExBlock(ex, exercises.indexOf(ex), saved); });
+  }
+  if(coreEx.length>0){
+    html+=`<div class="sec-lbl core">Core finisher</div>`;
+    coreEx.forEach(ex=>{ html+=renderExBlock(ex, exercises.indexOf(ex), saved); });
+  }
+  html+=`</div>`;
+  html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel?" onchange="autoSave()">${saved.notes||''}</textarea></div>`;
+  html+=`<button class="save-btn" onclick="autoSave()">Save progress</button>`;
+  content.innerHTML=html;
+
+  // Store which day plan we're using for this session
+  window._overrideDayPlan = dayPlan;
+}
+
 function renderToday(){
   const content=document.getElementById('todayContent');
   if(!content||!activeProgram) return;
   const dow=currentDate.getDay();
   const dayPlan=activeProgram.days.find(d=>d.day_of_week===dow);
   if(!dayPlan||dayPlan.type==='rest'){
-    content.innerHTML=`<div class="rest-day"><div class="rd-icon">🛋️</div><div class="rd-title">Rest Day</div><div class="rd-body">Full rest or a 20–30 min easy walk.<br>This is where the gains happen.</div></div>`;
+    content.innerHTML=`<div class="rest-day">
+      <div class="rd-icon">🛋️</div>
+      <div class="rd-title">Rest Day</div>
+      <div class="rd-body">Full rest or a 20–30 min easy walk.<br>This is where the gains happen.</div>
+      <button onclick="logAnywayPrompt()" style="margin-top:16px;width:100%;background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Log a workout anyway</button>
+    </div>`;
     return;
   }
   const key=getSessionKey(currentDate);
@@ -1548,7 +1608,7 @@ function getPrevBest(exName){
 
 function getSessionSets(){
   const dow=currentDate.getDay();
-  const dayPlan=activeProgram&&activeProgram.days.find(d=>d.day_of_week===dow);
+  const dayPlan=(window._overrideDayPlan)||(activeProgram&&activeProgram.days.find(d=>d.day_of_week===dow));
   if(!dayPlan||!dayPlan.exercises) return [];
   return dayPlan.exercises.map((ex,ei)=>{
     const rows=document.querySelectorAll(`#sets-${ei} .set-row`);

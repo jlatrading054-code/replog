@@ -1019,6 +1019,8 @@ sb.auth.onAuthStateChange(async (event, session)=>{
     isGuest = false;
     const hasProgram = lsGet('activeProgram');
     const hasOnboard = lsGet('onboarded');
+    // If they had guest data, migrate it to cloud
+    if(event === 'SIGNED_IN') migratGuestDataToCloud().catch(()=>{});
     if(hasProgram && hasOnboard){
       activeProgram = hasProgram;
       initApp();
@@ -1318,6 +1320,8 @@ function initApp(){
   const saved = lsGet('conversations');
   if(saved) conversationHistory = saved;
   if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  // Load sessions from cloud in background
+  loadSessionsFromCloud().catch(()=>{});
 }
 
 // ── TABS ───────────────────────────────────────────────────────
@@ -1556,6 +1560,146 @@ function getSessionSets(){
   });
 }
 
+// ── CLOUD SYNC ─────────────────────────────────────────────────
+async function syncSessionToCloud(dateKey, sessionData){
+  if(!currentUser || isGuest) return;
+  try {
+    const dow = new Date(dateKey+'T12:00:00').getDay();
+    const dayPlan = activeProgram && activeProgram.days.find(d=>d.day_of_week===dow);
+    if(!dayPlan) return;
+
+    // Determine status
+    const allSets = sessionData.sets ? sessionData.sets.flat() : [];
+    const doneSets = allSets.filter(s=>s.done).length;
+    const totalSets = allSets.length;
+    const status = doneSets>=totalSets && totalSets>0 ? 'complete' : 'in_progress';
+
+    // Upsert session log
+    const { data: existing } = await sb.from('session_logs')
+      .select('id')
+      .eq('user_id', currentUser.id)
+      .eq('logged_date', dateKey)
+      .single();
+
+    let sessionId;
+    if(existing){
+      sessionId = existing.id;
+      await sb.from('session_logs').update({
+        status,
+        notes: sessionData.notes || '',
+        completed_at: status==='complete' ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString()
+      }).eq('id', sessionId);
+      // Delete old set logs to replace them
+      await sb.from('set_logs').delete().eq('session_log_id', sessionId);
+    } else {
+      const { data: newSession } = await sb.from('session_logs').insert({
+        user_id: currentUser.id,
+        logged_date: dateKey,
+        status,
+        notes: sessionData.notes || '',
+        completed_at: status==='complete' ? new Date().toISOString() : null
+      }).select().single();
+      if(!newSession) return;
+      sessionId = newSession.id;
+    }
+
+    // Save set logs
+    const setLogRows = [];
+    (dayPlan.exercises || []).forEach((ex, ei) => {
+      const sets = sessionData.sets && sessionData.sets[ei] ? sessionData.sets[ei] : [];
+      sets.forEach((s, si) => {
+        if(s.reps || s.weight || s.done){
+          setLogRows.push({
+            session_log_id: sessionId,
+            exercise_name: ex.name,
+            set_number: si+1,
+            reps: s.reps ? parseFloat(s.reps) : null,
+            weight_lbs: s.weight ? parseFloat(s.weight) : null,
+            completed: s.done || false
+          });
+        }
+      });
+    });
+    if(setLogRows.length > 0){
+      await sb.from('set_logs').insert(setLogRows);
+    }
+  } catch(e){
+    console.log('Cloud sync error:', e.message);
+  }
+}
+
+async function loadSessionsFromCloud(){
+  if(!currentUser || isGuest) return;
+  try {
+    // Load last 90 days of sessions
+    const since = new Date();
+    since.setDate(since.getDate()-90);
+    const { data: sessions } = await sb.from('session_logs')
+      .select('*, set_logs(*)')
+      .eq('user_id', currentUser.id)
+      .gte('logged_date', since.toISOString().slice(0,10))
+      .order('logged_date', {ascending:false});
+
+    if(!sessions || sessions.length===0) return;
+
+    sessions.forEach(session => {
+      const key = 'session_'+session.logged_date;
+      const existing = lsGet(key);
+      // Only overwrite if cloud version is newer or local doesn't exist
+      if(!existing || new Date(session.updated_at||session.created_at) > new Date(existing.savedAt||0)){
+        const dow = new Date(session.logged_date+'T12:00:00').getDay();
+        const dayPlan = activeProgram && activeProgram.days.find(d=>d.day_of_week===dow);
+        if(!dayPlan) return;
+
+        // Reconstruct sets from set_logs
+        const setsArray = (dayPlan.exercises||[]).map((ex, ei) => {
+          const exSets = (session.set_logs||[])
+            .filter(sl => sl.exercise_name === ex.name)
+            .sort((a,b) => a.set_number - b.set_number);
+          if(exSets.length === 0){
+            return Array.from({length: ex.default_sets||3}, ()=>({reps:'',weight:'',done:false}));
+          }
+          return exSets.map(sl => ({
+            reps: sl.reps || '',
+            weight: sl.weight_lbs || '',
+            done: sl.completed || false
+          }));
+        });
+
+        lsSet(key, {
+          sets: setsArray,
+          notes: session.notes || '',
+          savedAt: session.updated_at || session.created_at
+        });
+      }
+    });
+
+    renderWeekStrip();
+    renderToday();
+    renderStreak();
+  } catch(e){
+    console.log('Cloud load error:', e.message);
+  }
+}
+
+async function migratGuestDataToCloud(){
+  if(!currentUser || isGuest) return;
+  try {
+    const sessionKeys = Object.keys(localStorage)
+      .filter(k=>k.startsWith('rl_session_'))
+      .map(k=>k.replace('rl_',''));
+
+    for(const key of sessionKeys){
+      const session = lsGet(key);
+      if(session) await syncSessionToCloud(key.replace('session_',''), session);
+    }
+    console.log('Guest data migrated to cloud');
+  } catch(e){
+    console.log('Migration error:', e.message);
+  }
+}
+
 function autoSave(){
   const key=getSessionKey(currentDate);
   const notes=document.getElementById('sessionNotes');
@@ -1563,6 +1707,9 @@ function autoSave(){
   lsSet(key,data);
   renderWeekStrip();
   updateProgressBar();
+  // Sync to cloud in background
+  const dateKey = currentDate.toISOString().slice(0,10);
+  syncSessionToCloud(dateKey, data).catch(()=>{});
 }
 
 function updateProgressBar(){

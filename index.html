@@ -1518,7 +1518,7 @@ function renderExBlock(ex, ei, saved){
   const isBW=ex.unit==='bw';
   const colLabel=ex.unit==='mins'?'Mins':ex.unit==='secs'?'Secs':'Reps';
   const prevBest=getPrevBest(ex.name);
-  const timerBtn=ex.is_timed?`<button class="ex-timer-btn" onclick="event.stopPropagation();(function(){const inp=document.querySelector('#sets-${ei} tr input[type=number]');const val=inp&&inp.value&&parseInt(inp.value)>0?parseInt(inp.value):${ex.default_reps||30};launchExTimer(val,'${ex.name.replace(/'/g,"\\'")}');})()">&blacktriangleright; Timer</button>`:'';
+  const timerBtn=ex.is_timed?`<button class="ex-timer-btn" onclick="event.stopPropagation();(function(){const inp=document.querySelector('#sets-${ei} .set-row input[type=number]');const val=inp&&inp.value&&parseInt(inp.value)>0?parseInt(inp.value):${ex.default_reps||30};launchExTimer(val,'${ex.name.replace(/'/g,"\\'")}');})()">&blacktriangleright; Timer</button>`:'';
   const pillClass=allDone?'sets-done':'sets-partial';
   const pillText=allDone?`${savedSets.length}/${savedSets.length} ✓`:doneCount>0?`${doneCount}/${savedSets.length}`:'';
 
@@ -1540,7 +1540,7 @@ function renderExBlock(ex, ei, saved){
     <div class="ex-body">`;
   if(prevBest) b+=`<div class="prev-best">Last best: <span>${prevBest}</span></div>`;
   b+=`<div class="set-hds"><div class="set-hd"></div><div class="set-hd">${colLabel}</div><div class="set-hd">${isBW?'BW':weightLabel()}</div><div class="set-hd">&#10003;</div></div>
-    <tbody id="sets-${ei}">`;
+    <div id="sets-${ei}">`;
   savedSets.forEach((s,si)=>{
     b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="event.stopPropagation();toggleDone(${ei},${si},this)">${s.done?'✓':''}</div></div>`;
   });
@@ -1581,14 +1581,16 @@ function toggleDone(ei, si, el){
 function addSet(ei,e){
   e.stopPropagation();
   const dow=currentDate.getDay();
-  const dayPlan=activeProgram.days.find(d=>d.day_of_week===dow);
+  const dayPlan=(window._overrideDayPlan)||(activeProgram&&activeProgram.days.find(d=>d.day_of_week===dow));
+  if(!dayPlan) return;
   const ex=dayPlan.exercises[ei];
   const container=document.getElementById('sets-'+ei);
+  if(!container) return;
   const si=container.querySelectorAll('.set-row').length;
   const isBW=ex.unit==='bw';
   const div=document.createElement('div');
   div.className='set-row';
-  div.innerHTML=`<div class="sn">${si+1}</div><input class="si" type="number" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" placeholder="${isBW?'BW':'lb'}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc undone" onclick="toggleDone(${ei},${si})"></div>`;
+  div.innerHTML=`<div class="sn">${si+1}</div><input class="si" type="number" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc undone" onclick="event.stopPropagation();toggleDone(${ei},${si},this)"></div>`;
   container.appendChild(div);
 }
 

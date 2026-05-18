@@ -2342,6 +2342,8 @@ async function sendMessage(){
 
   const systemPrompt=`You are Coach Rep, an encouraging, knowledgeable, and direct AI strength coach inside the RepLog fitness app. You are conversational, supportive, and data-driven.
 
+IMPORTANT CAPABILITY: You CAN load programs directly into RepLog. When a user describes their existing program OR asks you to build a new one, generate a JSON_PROGRAM block at the end of your response and it will appear as a "Load this program" button in the app. Use this freely.
+
 User profile:
 - Program: ${activeProgram?activeProgram.name:'Unknown'}
 - Goals: ${onboardData.goals.join(', ')||'General fitness'}

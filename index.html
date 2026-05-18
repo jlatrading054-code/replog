@@ -1505,7 +1505,7 @@ function renderToday(){
   }
   html+=`</div>`;
   html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel? Any PRs? Notes on form…" onchange="autoSave()">${saved.notes||''}</textarea></div>`;
-  if(!isComplete) html+=`<button class="save-btn" onclick="autoSave()">Save progress</button>`;
+  if(!isComplete) html+=`<button class="save-btn" onclick="saveWithFeedback(this)">Save progress</button><div id="saveConfirm" style="display:none;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--accent2);margin-top:8px;">✓ Session saved</div>`;
   content.innerHTML=html;
 }
 
@@ -1763,6 +1763,23 @@ async function migratGuestDataToCloud(){
     console.log('Guest data migrated to cloud');
   } catch(e){
     console.log('Migration error:', e.message);
+  }
+}
+
+function saveWithFeedback(btn){
+  autoSave();
+  const confirm = document.getElementById('saveConfirm');
+  if(confirm){
+    confirm.style.display = 'block';
+    btn.textContent = '✓ Saved';
+    btn.style.background = 'var(--surface2)';
+    btn.style.color = 'var(--accent2)';
+    setTimeout(()=>{
+      confirm.style.display = 'none';
+      btn.textContent = 'Save progress';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 2000);
   }
 }
 

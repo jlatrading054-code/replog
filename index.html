@@ -1174,20 +1174,29 @@ Return ONLY a valid JSON object. No markdown, no backticks, no explanation, no t
 Include 5-7 exercises per training day. Include rest days. Include core exercises (is_core: true) at the end of training days. Include a Zone 2 cardio + mobility day if days allow. Make it appropriate for their level and equipment.`;
 
   try {
-    const data = await callCoachRep([{role:'user',content:prompt}], '', 3000);
+    const data = await callCoachRep([{role:'user',content:prompt}], '', 3000, true);
     clearInterval(interval);
-    // Response is wrapped in data object from Supabase invoke
     const responseData = data.content ? data : (data.data || data);
-    const text = responseData.content ? responseData.content.filter(c=>c.type==='text').map(c=>c.text).join('') : '';
-    // Clean up common JSON issues from AI responses
-    let clean = text.replace(/```json|```/g,'').trim();
-    // Find the JSON object boundaries
-    const start = clean.indexOf('{');
-    const end = clean.lastIndexOf('}');
-    if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
-    // Fix smart quotes and common issues
-    clean = clean.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
-    const program = JSON.parse(clean);
+
+    // Try to get program from Edge Function's program field first
+    let program = data.program || (data.data && data.data.program) || null;
+
+    // Fallback: try to parse JSON from text
+    if(!program){
+      const text = responseData.content ? responseData.content.filter(c=>c.type==='text').map(c=>c.text).join('') : '';
+      try {
+        let clean = text.replace(/```json|```/g,'').trim();
+        const start = clean.indexOf('{');
+        const end = clean.lastIndexOf('}');
+        if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
+        clean = clean.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
+        program = JSON.parse(clean);
+      } catch(e){
+        console.log('JSON parse failed, using default program');
+      }
+    }
+
+    if(!program) program = getDefaultProgram();
     program.user_id = currentUser ? currentUser.id : 'guest';
     program.is_active = true;
     program.created_by_ai = true;
@@ -1436,7 +1445,7 @@ function logAnyway(dow){
     coreEx.forEach(ex=>{ html+=renderExBlock(ex, exercises.indexOf(ex), saved); });
   }
   html+=`</div>`;
-  html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel?" onchange="autoSave()">${saved.notes||''}</textarea></div>`;
+  html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel?" onblur="autoSave()">${saved.notes||''}</textarea></div>`;
   html+=`<button class="save-btn" onclick="autoSave()">Save progress</button>`;
   content.innerHTML=html;
 
@@ -1504,7 +1513,7 @@ function renderToday(){
     coreEx.forEach((ex,i)=>{ html+=renderExBlock(ex, exercises.indexOf(ex), saved); });
   }
   html+=`</div>`;
-  html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel? Any PRs? Notes on form…" onchange="autoSave()">${saved.notes||''}</textarea></div>`;
+  html+=`<div class="notes-wrap"><div class="notes-lbl">Session notes</div><textarea class="notes-ta" id="sessionNotes" placeholder="How did it feel? Any PRs? Notes on form…" onblur="autoSave()">${saved.notes||''}</textarea></div>`;
   if(!isComplete) html+=`<button class="save-btn" onclick="saveWithFeedback(this)">Save progress</button><div id="saveConfirm" style="display:none;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--accent2);margin-top:8px;">✓ Session saved</div>`;
   content.innerHTML=html;
 }
@@ -1542,7 +1551,7 @@ function renderExBlock(ex, ei, saved){
   b+=`<div class="set-hds"><div class="set-hd"></div><div class="set-hd">${colLabel}</div><div class="set-hd">${isBW?'BW':weightLabel()}</div><div class="set-hd">&#10003;</div></div>
     <div id="sets-${ei}">`;
   savedSets.forEach((s,si)=>{
-    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="event.stopPropagation();toggleDone(${ei},${si},this)">${s.done?'✓':''}</div></div>`;
+    b+=`<div class="set-row"><div class="sn">${si+1}</div><input class="si" type="number" value="${s.reps}" placeholder="—" min="0" onblur="autoSave()"><input class="si" type="number" value="${s.weight}" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onblur="autoSave()"><div class="sc ${s.done?'done':'undone'}" onclick="event.stopPropagation();toggleDone(${ei},${si},this)">${s.done?'✓':''}</div></div>`;
   });
   b+=`</tbody>
     <button class="add-set-btn" onclick="addSet(${ei},event)">+ Add set</button>
@@ -1590,7 +1599,7 @@ function addSet(ei,e){
   const isBW=ex.unit==='bw';
   const div=document.createElement('div');
   div.className='set-row';
-  div.innerHTML=`<div class="sn">${si+1}</div><input class="si" type="number" placeholder="—" min="0" onchange="autoSave()"><input class="si" type="number" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onchange="autoSave()"><div class="sc undone" onclick="event.stopPropagation();toggleDone(${ei},${si},this)"></div>`;
+  div.innerHTML=`<div class="sn">${si+1}</div><input class="si" type="number" placeholder="—" min="0" onblur="autoSave()"><input class="si" type="number" placeholder="${isBW?'BW':weightLabel()}" min="0" ${isBW?'disabled':''} onblur="autoSave()"><div class="sc undone" onclick="event.stopPropagation();toggleDone(${ei},${si},this)"></div>`;
   container.appendChild(div);
 }
 

@@ -1,4 +1,4 @@
-const CACHE = 'replog-v22';
+const CACHE = 'replog-v23';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './coach-rep.png'];
 
 self.addEventListener('install', e => {

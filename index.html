@@ -1917,7 +1917,7 @@ async function initPushNotifications(){
     const { data } = await sb.functions.invoke('push-notifications', {
       body: { action: 'vapid_key' }
     });
-    if(data && data.public_key) vapidPublicKey = data.public_key;
+    if(data && data.public_key) vapidPublicKey = data.public_key.trim().replace(/^["']|["']$/g, '');
   } catch(e){ console.log('VAPID key error:', e); return; }
 
   // Check if already subscribed

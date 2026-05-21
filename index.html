@@ -555,6 +555,19 @@ textarea.notes-ta:focus{border-color:var(--accent);}
         <button class="option-btn" style="flex:1;padding:10px;" onclick="selectOption(this,'irregular_schedule','No')"><div class="opt-label">No</div></button>
       </div>
     </div>
+    <div class="form-group"><label class="form-label">Do you work shift work?</label>
+      <div class="option-grid" style="grid-template-columns:repeat(2,1fr);">
+        <button class="option-btn" onclick="selectOption(this,'shift_schedule','No shift work')"><div class="opt-label">No shift work</div><div class="opt-sub">Regular schedule</div></button>
+        <button class="option-btn" onclick="selectOption(this,'shift_schedule','24/48')"><div class="opt-label">24/48</div><div class="opt-sub">24 on, 48 off</div></button>
+        <button class="option-btn" onclick="selectOption(this,'shift_schedule','48/96')"><div class="opt-label">48/96</div><div class="opt-sub">48 on, 96 off</div></button>
+        <button class="option-btn" onclick="selectOption(this,'shift_schedule','24/72')"><div class="opt-label">24/72</div><div class="opt-sub">24 on, 72 off</div></button>
+        <button class="option-btn" onclick="selectOption(this,'shift_schedule','Other')"><div class="opt-label">Other</div><div class="opt-sub">Custom schedule</div></button>
+      </div>
+    </div>
+    <div class="form-group" id="shiftDateGroup" style="display:none;">
+      <label class="form-label">When is your next shift start date?</label>
+      <input class="form-input" type="date" id="ob-shift-date" onchange="onboardData.shift_start_date=this.value">
+    </div>
     <button class="onboard-next" onclick="nextStep(5)">Continue</button>
   </div>
 
@@ -843,7 +856,7 @@ function changeWeek(dir){
   renderWeekStrip();
   renderToday();
 }
-let onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'' };
+let onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'', shift_schedule:'', shift_start_date:'', preferred_training_days:[] };
 let activeProgram = null;
 let conversationHistory = [];
 let isGuest = false;
@@ -1040,7 +1053,7 @@ async function resetApp(){
   // Reset state
   activeProgram = null;
   conversationHistory = [];
-  onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'' };
+  onboardData = { goals:[], level:'', equipment:[], days:'5', age:'', weight:'', height_ft:'', height_in:'', sex:'', session_length:'', irregular_schedule:'', injuries:[], conditions:[], health_notes:'', training_history:[], what_worked:'', what_didnt:'', training_style:'', love_exercises:'', hate_exercises:'', other_notes:'', shift_schedule:'', shift_start_date:'', preferred_training_days:[] };
   document.getElementById('settingsMenu').classList.remove('open');
   // Go to onboarding
   showScreen('screen-onboard');
@@ -1110,13 +1123,24 @@ function selectOption(btn, key, val){
   if(parent) parent.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
   onboardData[key] = val;
+  // Show shift date field when shift work is selected
+  if(key === 'shift_schedule'){
+    const dateGroup = document.getElementById('shiftDateGroup');
+    if(dateGroup) dateGroup.style.display = val !== 'No shift work' ? 'block' : 'none';
+  }
+  // Persist profile changes
+  lsSet('onboardData', onboardData);
 }
+
+function saveProfile(){ lsSet('onboardData', onboardData); }
+function loadProfile(){ const saved=lsGet('onboardData'); if(saved) Object.assign(onboardData, saved); }
 
 function toggleGoal(btn, val){
   btn.classList.toggle('selected');
   const idx = onboardData.goals.indexOf(val);
   if(idx>=0) onboardData.goals.splice(idx,1);
   else onboardData.goals.push(val);
+  saveProfile();
 }
 
 function toggleEquip(btn, val){
@@ -1124,6 +1148,7 @@ function toggleEquip(btn, val){
   const idx = onboardData.equipment.indexOf(val);
   if(idx>=0) onboardData.equipment.splice(idx,1);
   else onboardData.equipment.push(val);
+  saveProfile();
 }
 
 function toggleHealth(btn, val){
@@ -1131,6 +1156,7 @@ function toggleHealth(btn, val){
   const idx = onboardData.injuries.indexOf(val);
   if(idx>=0) onboardData.injuries.splice(idx,1);
   else onboardData.injuries.push(val);
+  saveProfile();
 }
 
 function toggleCondition(btn, val){
@@ -1138,6 +1164,7 @@ function toggleCondition(btn, val){
   const idx = onboardData.conditions.indexOf(val);
   if(idx>=0) onboardData.conditions.splice(idx,1);
   else onboardData.conditions.push(val);
+  saveProfile();
 }
 
 function toggleHistory(btn, val){
@@ -1145,6 +1172,7 @@ function toggleHistory(btn, val){
   const idx = onboardData.training_history.indexOf(val);
   if(idx>=0) onboardData.training_history.splice(idx,1);
   else onboardData.training_history.push(val);
+  saveProfile();
 }
 
 function nextStep(stepNum){
@@ -1466,6 +1494,7 @@ function getDefaultProgram(){
 // ── INIT APP ───────────────────────────────────────────────────
 function initApp(){
   showScreen('screen-app');
+  loadProfile();
   const initials = currentUser ? (currentUser.user_metadata?.full_name||currentUser.email||'?').slice(0,2).toUpperCase() : 'ME';
   ['userAvatar','userAvatar2','userAvatar3'].forEach(id=>{
     const el = document.getElementById(id);
@@ -1482,6 +1511,8 @@ function initApp(){
   loadSessionsFromCloud().catch(()=>{});
   // Init push notifications after a short delay
   setTimeout(()=>initPushNotifications().catch(()=>{}), 3000);
+  // Check for weekly planning
+  setTimeout(()=>checkWeeklyPlanningNeeded(), 1500);
 }
 
 // ── TABS ───────────────────────────────────────────────────────
@@ -1550,6 +1581,37 @@ function selectDay(i){
 }
 
 // ── TODAY ──────────────────────────────────────────────────────
+function swapWorkoutPrompt(){
+  const trainingDays = activeProgram ? activeProgram.days.filter(d=>d.type!=='rest') : [];
+  if(trainingDays.length===0) return;
+  const content = document.getElementById('todayContent');
+  const dow = currentDate.getDay();
+  let html = `<div class="rest-day">
+    <div class="rd-title" style="margin-bottom:14px;">Swap today's workout for:</div>`;
+  trainingDays.forEach(day=>{
+    if(day.day_of_week !== dow){
+      html+=`<button onclick="logAnyway(${day.day_of_week})" style="width:100%;margin-bottom:8px;background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);">${day.name}</button>`;
+    }
+  });
+  html+=`<button onclick="quickWorkoutPrompt()" style="width:100%;margin-bottom:8px;background:rgba(204,41,54,0.1);border:1px solid rgba(204,41,54,0.3);border-radius:10px;padding:12px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--accent);">⚡ Quick workout instead</button>`;
+  html+=`<button onclick="renderToday()" style="width:100%;margin-top:4px;background:transparent;border:1px solid var(--bd);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--muted);">Cancel</button></div>`;
+  content.innerHTML = html;
+}
+
+function quickWorkoutPrompt(){
+  showTab('coach');
+  setTimeout(()=>{
+    const equipment = onboardData.equipment.join(', ') || 'whatever is available';
+    const isShift = onboardData.shift_schedule && onboardData.shift_schedule !== 'No shift work';
+    const context = isShift ? `The user is a ${onboardData.shift_schedule} shift worker and may need to stop mid-workout if called out.` : '';
+    const msg = `I want a quick workout for today — something I can do in 20-30 minutes. Equipment available: ${equipment}. Keep it short and effective.`;
+    document.getElementById('chatInput').value = msg;
+    addBubble('coach', `Got it — give me a second and I'll put together a quick ${isShift ? 'station-friendly ' : ''}workout you can knock out in 20-30 min. ${isShift ? 'I\'ll keep it interruptible in case you get a call.' : ''}`);
+    conversationHistory.push({role:'assistant', content:`Give me a second and I'll put together a quick workout.`});
+    sendMessage();
+  }, 300);
+}
+
 function logAnywayPrompt(){
   if(!activeProgram) return;
   const trainingDays = activeProgram.days.filter(d=>d.type!=='rest');
@@ -1614,7 +1676,10 @@ function renderToday(){
       <div class="rd-icon">🛋️</div>
       <div class="rd-title">Rest Day</div>
       <div class="rd-body">Full rest or a 20–30 min easy walk.<br>This is where the gains happen.</div>
-      <button onclick="logAnywayPrompt()" style="margin-top:16px;width:100%;background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Log a workout anyway</button>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-direction:column;">
+        <button onclick="quickWorkoutPrompt()" style="width:100%;background:rgba(204,41,54,0.1);border:1px solid rgba(204,41,54,0.3);border-radius:10px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent);">⚡ Quick workout</button>
+        <button onclick="logAnywayPrompt()" style="width:100%;background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);">Log a scheduled workout</button>
+      </div>
     </div>`;
     return;
   }
@@ -1639,7 +1704,10 @@ function renderToday(){
   let html=`
     <div class="today-hd">
       <div><div class="today-title">${dayPlan.name}</div><div class="today-meta">${months[currentDate.getMonth()]} ${currentDate.getDate()} · Week ${activeProgram.current_week||1} of ${activeProgram.duration_weeks||12}</div></div>
-      <div class="today-badge ${typeClass}">${typeLabel}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="today-badge ${typeClass}">${typeLabel}</div>
+        <button onclick="swapWorkoutPrompt()" style="background:transparent;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:0;letter-spacing:0.05em;text-transform:uppercase;">⇄ Swap</button>
+      </div>
     </div>
     <div class="prog-card">
       <div><div class="pc-lbl">Active program</div><div class="pc-name">${activeProgram.name}</div><div class="pc-sub">Day ${dow} · ${pct}% today</div></div>
@@ -1786,7 +1854,58 @@ function getSessionSets(){
   });
 }
 
-// ── PUSH NOTIFICATIONS ─────────────────────────────────────────
+// ── WEEKLY PLANNING CHECK-IN ────────────────────────────────────
+function checkWeeklyPlanningNeeded(){
+  if(!activeProgram || !currentUser) return;
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  if(dayOfWeek !== 1) return; // Only on Mondays
+
+  const lastCheckin = lsGet('last_weekly_checkin');
+  const thisMonday = new Date(today);
+  thisMonday.setHours(0,0,0,0);
+  const thisMondayStr = thisMonday.toISOString().slice(0,10);
+
+  if(lastCheckin === thisMondayStr) return; // Already done this week
+  lsSet('last_weekly_checkin', thisMondayStr);
+
+  // Show weekly planning banner
+  setTimeout(()=>{
+    const banner = document.createElement('div');
+    banner.id = 'weeklyBanner';
+    banner.style.cssText = `position:fixed;top:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--surface);border-bottom:1px solid var(--bd);padding:14px 16px;z-index:200;`;
+    const shiftNote = onboardData.shift_schedule && onboardData.shift_schedule !== 'No shift work'
+      ? ` You're on a ${onboardData.shift_schedule} schedule.` : '';
+    banner.innerHTML = `
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--accent);">
+          <img src="coach-rep.png" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Coach Rep — New week</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5;">New week starting.${shiftNote} Which days do you want to train this week?</div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button onclick="openWeeklyPlanning()" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Plan my week</button>
+            <button onclick="document.getElementById('weeklyBanner').remove()" style="background:var(--surface2);border:1px solid var(--bd);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Keep current schedule</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(banner);
+  }, 2000);
+}
+
+function openWeeklyPlanning(){
+  const banner = document.getElementById('weeklyBanner');
+  if(banner) banner.remove();
+  showTab('coach');
+  setTimeout(()=>{
+    const shiftNote = onboardData.shift_schedule && onboardData.shift_schedule !== 'No shift work'
+      ? ` I know you're on a ${onboardData.shift_schedule} shift schedule.` : '';
+    addBubble('coach', `New week!${shiftNote} Tell me which days you want to train this week and I'll set up your schedule. You can also tell me if anything has changed — injuries, schedule, how you're feeling.`);
+    conversationHistory.push({role:'assistant', content:`New week! Tell me which days you want to train and I'll set up your schedule.`});
+    lsSet('conversations', conversationHistory);
+  }, 300);
+}
 let vapidPublicKey = null;
 
 async function initPushNotifications(){
@@ -2442,9 +2561,18 @@ async function sendMessage(){
       return `${k.replace('rl_session_','')}: ${done}/${total} sets completed`;
     }).filter(Boolean).join('\n');
 
+  const shiftInfo = onboardData.shift_schedule && onboardData.shift_schedule !== 'No shift work'
+    ? `Shift schedule: ${onboardData.shift_schedule}${onboardData.shift_start_date ? ', next shift: '+onboardData.shift_start_date : ''}`
+    : 'No shift work';
+
   const systemPrompt=`You are Coach Rep, an encouraging, knowledgeable, and direct AI strength coach inside the RepLog fitness app. You are conversational, supportive, and data-driven.
 
-IMPORTANT CAPABILITY: You CAN load programs directly into RepLog. When a user describes their existing program OR asks you to build a new one, generate a JSON_PROGRAM block at the end of your response and it will appear as a "Load this program" button in the app. Use this freely.
+IMPORTANT CAPABILITIES:
+1. You CAN load programs directly into RepLog using JSON_PROGRAM at the end of your response.
+2. You CAN update the user profile using JSON_PROFILE at the end of your response when they tell you their schedule, goals, injuries or preferences have changed.
+
+JSON_PROFILE format (only include changed fields):
+JSON_PROFILE:{"days":"4","shift_schedule":"24/48","preferred_training_days":["Monday","Wednesday","Friday"]}
 
 User profile:
 - Program: ${activeProgram?activeProgram.name:'Unknown'}
@@ -2452,7 +2580,9 @@ User profile:
 - Level: ${onboardData.level||'Intermediate'}
 - Age: ${onboardData.age||'unknown'} | Weight: ${onboardData.weight?onboardData.weight+' lbs':'unknown'} | Sex: ${onboardData.sex||'unknown'}
 - Equipment: ${onboardData.equipment.join(', ')||'Various'}
-- Session length: ${onboardData.session_length||'45-60 min'} | Days/week: ${onboardData.days||5}
+- Training days/week: ${onboardData.days||5} | Session length: ${onboardData.session_length||'45-60 min'}
+- ${shiftInfo}
+- Preferred training days: ${onboardData.preferred_training_days&&onboardData.preferred_training_days.length>0?onboardData.preferred_training_days.join(', '):'not set'}
 - Injuries: ${onboardData.injuries.join(', ')||'none'} | Conditions: ${onboardData.conditions.join(', ')||'none'}
 - Loves: ${onboardData.love_exercises||'not specified'} | Avoids: ${onboardData.hate_exercises||'not specified'}
 - Training style: ${onboardData.training_style||'balanced'}
@@ -2461,15 +2591,28 @@ User profile:
 Recent training sessions:
 ${recentSessions||'No sessions logged yet'}
 
-Keep responses concise and actionable — 2-4 sentences max unless they ask for a full program or detailed explanation. Be real, not corporate. If they are struggling, acknowledge it. If they are crushing it, call it out. Always end with something actionable.`;
+When the user tells you their schedule changed, they want different training days, or any profile info changes — update it with JSON_PROFILE and confirm what changed. Keep responses concise and actionable. Be real, not corporate.`;
 
   try{
     const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);
     console.log('Raw response:', JSON.stringify(data));
     console.log('Program field:', data.program, 'Data.data:', data.data?.program);
     const response = data.content ? data : (data.data || data);
-    console.log('Using response:', response.content ? 'direct' : 'wrapped');
-    const reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+    let reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+
+    // Check for profile update
+    const profileMarker = 'JSON_PROFILE:';
+    const profileIdx = reply.lastIndexOf(profileMarker);
+    if(profileIdx !== -1){
+      const profileStr = reply.slice(profileIdx + profileMarker.length).split('\n')[0].trim();
+      try {
+        const profileUpdate = JSON.parse(profileStr);
+        Object.assign(onboardData, profileUpdate);
+        saveProfile();
+        reply = reply.slice(0, profileIdx).trim();
+        console.log('Profile updated:', profileUpdate);
+      } catch(e){ console.log('Profile parse error:', e); }
+    }
     typing.remove();
     conversationHistory.push({role:'assistant',content:reply});
 

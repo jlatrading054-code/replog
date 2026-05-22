@@ -256,6 +256,27 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 
 /* ── STATS VIEW ───────────────────────────────────────────────── */
 .stats-wrap{padding:16px;}
+/* ── MEASUREMENTS ─────────────────────────────────────────────── */
+.measure-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);}
+.measure-modal.open{display:flex;}
+.measure-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:480px;max-height:80vh;overflow-y:auto;}
+.measure-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.measure-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+.measure-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.measure-field{background:var(--surface2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;}
+.measure-field label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px;}
+.measure-field input{width:100%;background:transparent;border:none;color:var(--text);font-size:18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;outline:none;}
+.measure-save{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+.measure-history{background:var(--surface);border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.measure-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--bd);}
+.measure-row:last-child{border-bottom:none;}
+.measure-date{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--muted);font-weight:700;}
+.measure-vals{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--text);}
+.measure-change{font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;}
+.measure-change.down{color:#2ecc71;}
+.measure-change.up{color:#ff6b6b;}
+.measure-change.same{color:var(--muted);}
+
 .stats-ttl{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;margin-bottom:14px;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
 .stat-card{background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:12px;}
@@ -370,7 +391,55 @@ textarea.notes-ta:focus{border-color:var(--accent);}
   </div>
 </div>
 
-<!-- SETTINGS MENU -->
+<!-- MEASUREMENTS MODAL -->
+<div class="measure-modal" id="measureModal">
+  <div class="measure-sheet">
+    <div class="measure-title">
+      Log Measurements
+      <button class="measure-close" onclick="closeMeasurements()">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Same time of day, same conditions each time. Morning before eating is best.</div>
+    <div class="measure-grid">
+      <div class="measure-field">
+        <label>Weight (${currentUnits||'lbs'})</label>
+        <input type="number" id="m-weight" placeholder="0" min="0" step="0.1">
+      </div>
+      <div class="measure-field">
+        <label>Body fat %</label>
+        <input type="number" id="m-bodyfat" placeholder="0" min="0" max="60" step="0.1">
+      </div>
+      <div class="measure-field">
+        <label>Waist (in)</label>
+        <input type="number" id="m-waist" placeholder="0" min="0" step="0.25">
+      </div>
+      <div class="measure-field">
+        <label>Chest (in)</label>
+        <input type="number" id="m-chest" placeholder="0" min="0" step="0.25">
+      </div>
+      <div class="measure-field">
+        <label>Hips (in)</label>
+        <input type="number" id="m-hips" placeholder="0" min="0" step="0.25">
+      </div>
+      <div class="measure-field">
+        <label>Arms (in)</label>
+        <input type="number" id="m-arms" placeholder="0" min="0" step="0.25">
+      </div>
+      <div class="measure-field">
+        <label>Thighs (in)</label>
+        <input type="number" id="m-thighs" placeholder="0" min="0" step="0.25">
+      </div>
+      <div class="measure-field">
+        <label>Neck (in)</label>
+        <input type="number" id="m-neck" placeholder="0" min="0" step="0.25">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <textarea class="form-input" id="m-notes" placeholder="How are you feeling? Any observations…" style="min-height:50px;resize:none;"></textarea>
+    </div>
+    <button class="measure-save" onclick="saveMeasurements()">Save measurements</button>
+  </div>
+</div>
 <div class="settings-menu" id="settingsMenu">
   <!-- User info -->
   <div class="sm-item" style="flex-direction:column;align-items:flex-start;gap:2px;padding-bottom:8px;">
@@ -1476,6 +1545,8 @@ function initApp(){
   loadSessionsFromCloud().catch(()=>{});
   // Init push notifications after a short delay
   setTimeout(()=>initPushNotifications().catch(()=>{}), 3000);
+  // Check for measurement reminder
+  setTimeout(()=>checkMeasurementReminder(), 2000);
   // Check for weekly planning
   setTimeout(()=>checkWeeklyPlanningNeeded(), 1500);
 }
@@ -1671,7 +1742,7 @@ function renderToday(){
       <div><div class="today-title">${dayPlan.name}</div><div class="today-meta">${months[currentDate.getMonth()]} ${currentDate.getDate()} · Week ${activeProgram.current_week||1} of ${activeProgram.duration_weeks||12}</div></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
         <div class="today-badge ${typeClass}">${typeLabel}</div>
-        <button onclick="swapWorkoutPrompt()" style="background:transparent;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;padding:0;letter-spacing:0.05em;text-transform:uppercase;">⇄ Swap</button>
+        <button onclick="swapWorkoutPrompt()" style="background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.3);border-radius:5px;color:var(--accent2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;padding:3px 8px;letter-spacing:0.05em;text-transform:uppercase;">⇄ Swap</button>
       </div>
     </div>
     <div class="prog-card">
@@ -1817,6 +1888,91 @@ function getSessionSets(){
       return{reps:inputs[0]?inputs[0].value:'',weight:inputs[1]?inputs[1].value:'',done:sc?sc.classList.contains('done'):false};
     });
   });
+}
+
+// ── MEASUREMENTS ───────────────────────────────────────────────
+function openMeasurements(){
+  document.getElementById('measureModal').classList.add('open');
+  const today = new Date().toISOString().slice(0,10);
+  const existing = lsGet('measurement_'+today);
+  if(existing){
+    ['weight','bodyfat','waist','chest','hips','arms','thighs','neck'].forEach(f=>{
+      const el = document.getElementById('m-'+f);
+      if(el && existing[f]) el.value = existing[f];
+    });
+    const notes = document.getElementById('m-notes');
+    if(notes && existing.notes) notes.value = existing.notes;
+  }
+}
+
+function closeMeasurements(){
+  document.getElementById('measureModal').classList.remove('open');
+}
+
+function saveMeasurements(){
+  const today = new Date().toISOString().slice(0,10);
+  const data = {
+    date: today,
+    weight: document.getElementById('m-weight').value,
+    bodyfat: document.getElementById('m-bodyfat').value,
+    waist: document.getElementById('m-waist').value,
+    chest: document.getElementById('m-chest').value,
+    hips: document.getElementById('m-hips').value,
+    arms: document.getElementById('m-arms').value,
+    thighs: document.getElementById('m-thighs').value,
+    neck: document.getElementById('m-neck').value,
+    notes: document.getElementById('m-notes').value,
+    savedAt: new Date().toISOString()
+  };
+  if(!data.weight && !data.waist){ alert('Please enter at least your weight or waist measurement.'); return; }
+  lsSet('measurement_'+today, data);
+  closeMeasurements();
+  renderStats();
+}
+
+function getMeasurements(){
+  return Object.keys(localStorage)
+    .filter(k=>k.startsWith('rl_measurement_'))
+    .map(k=>lsGet(k.replace('rl_','')))
+    .filter(Boolean)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function checkMeasurementReminder(){
+  if(!activeProgram || !currentUser) return;
+  const measurements = getMeasurements();
+  const today = new Date();
+  if(measurements.length === 0){
+    if(!lsGet('onboarded_date')) lsSet('onboarded_date', today.toISOString().slice(0,10));
+    setTimeout(()=> showMeasurementNudge('baseline'), 4000);
+    return;
+  }
+  const lastMeasure = new Date(measurements[measurements.length-1].date+'T12:00:00');
+  const daysSince = Math.floor((today - lastMeasure) / (1000*60*60*24));
+  if(daysSince >= 28) setTimeout(()=> showMeasurementNudge('checkin'), 4000);
+}
+
+function showMeasurementNudge(type){
+  if(document.getElementById('measureNudge')) return;
+  const banner = document.createElement('div');
+  banner.id = 'measureNudge';
+  banner.style.cssText = `position:fixed;bottom:calc(64px + env(safe-area-inset-bottom) + 8px);left:12px;right:12px;max-width:456px;margin:0 auto;background:var(--surface);border:1px solid var(--bd);border-top:3px solid var(--accent);padding:12px 14px;z-index:150;border-radius:10px;`;
+  const isBaseline = type === 'baseline';
+  banner.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <div style="width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--accent);">
+        <img src="coach-rep.png" style="width:100%;height:100%;object-fit:cover;object-position:center top;">
+      </div>
+      <div style="flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Coach Rep</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.5;">${isBaseline ? "Log your starting measurements before you begin — this is your baseline. The number that matters is the change, not where you start." : "4 weeks in — time for measurements. Same conditions as last time. Let's see what's actually changing."}</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button onclick="openMeasurements();document.getElementById('measureNudge').remove();" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Log now</button>
+          <button onclick="document.getElementById('measureNudge').remove()" style="background:var(--surface2);border:1px solid var(--bd);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Later</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(banner);
 }
 
 // ── WEEKLY PLANNING CHECK-IN ────────────────────────────────────
@@ -2286,8 +2442,17 @@ function renderStats(){
     weekData.push({count,label});
   }
 
+  // ── MEASUREMENTS DATA ──────────────────────────────────────────
+  const measurements = getMeasurements();
+  const latestM = measurements.length > 0 ? measurements[measurements.length-1] : null;
+  const firstM = measurements.length > 1 ? measurements[0] : null;
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
   // ── BUILD HTML ───────────────────────────────────────────────
-  let html=`<div class="stats-ttl">Your Stats</div>
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div class="stats-ttl" style="margin-bottom:0;">Your Stats</div>
+    <button onclick="openMeasurements()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:7px 12px;">+ Measurements</button>
+  </div>`;
     <div class="stat-grid">
       <div class="stat-card hl">
         <div class="stat-lbl">This week</div>
@@ -2366,6 +2531,91 @@ function renderStats(){
     html+=`</div>`;
   } else {
     html+=`<div style="text-align:center;padding:30px;color:var(--dim);font-size:13px;">Log some weights and your PRs will appear here.</div>`;
+  }
+
+  // ── MEASUREMENTS SECTION ─────────────────────────────────────
+  if(latestM){
+    const weightChange = firstM && latestM.weight && firstM.weight
+      ? (parseFloat(latestM.weight) - parseFloat(firstM.weight)).toFixed(1)
+      : null;
+    const waistChange = firstM && latestM.waist && firstM.waist
+      ? (parseFloat(latestM.waist) - parseFloat(firstM.waist)).toFixed(2)
+      : null;
+
+    html+=`<div class="pr-card">
+      <div class="pr-ttl" style="display:flex;justify-content:space-between;align-items:center;">
+        Measurements
+        <button onclick="openMeasurements()" style="background:none;border:none;color:var(--accent2);font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">+ Update</button>
+      </div>`;
+
+    // Summary cards
+    if(latestM.weight){
+      const wc = weightChange ? parseFloat(weightChange) : 0;
+      const wcClass = wc < 0 ? 'down' : wc > 0 ? 'up' : 'same';
+      const wcLabel = wc !== 0 ? `${wc > 0 ? '+' : ''}${weightChange} ${weightLabel()}` : 'No change';
+      html+=`<div class="pr-row">
+        <div><div class="pr-nm">Body weight</div><div style="font-size:10px;color:var(--dim)">Latest: ${new Date(latestM.date+'T12:00:00').toLocaleDateString()}</div></div>
+        <div style="text-align:right;">
+          <div class="pr-wt">${latestM.weight} <span>${weightLabel()}</span></div>
+          ${weightChange ? `<div class="measure-change ${wcClass}">${wcLabel} from start</div>` : ''}
+        </div>
+      </div>`;
+    }
+    if(latestM.waist){
+      const wc = waistChange ? parseFloat(waistChange) : 0;
+      const wcClass = wc < 0 ? 'down' : wc > 0 ? 'up' : 'same';
+      html+=`<div class="pr-row">
+        <div><div class="pr-nm">Waist</div><div style="font-size:10px;color:var(--dim)">Best indicator of fat loss</div></div>
+        <div style="text-align:right;">
+          <div class="pr-wt">${latestM.waist} <span>in</span></div>
+          ${waistChange ? `<div class="measure-change ${wcClass}">${wc < 0 ? '' : '+'}${waistChange}" from start</div>` : ''}
+        </div>
+      </div>`;
+    }
+    if(latestM.bodyfat) html+=`<div class="pr-row"><div class="pr-nm">Body fat</div><div class="pr-wt">${latestM.bodyfat}<span>%</span></div></div>`;
+    if(latestM.chest) html+=`<div class="pr-row"><div class="pr-nm">Chest</div><div class="pr-wt">${latestM.chest}<span> in</span></div></div>`;
+    if(latestM.arms) html+=`<div class="pr-row"><div class="pr-nm">Arms</div><div class="pr-wt">${latestM.arms}<span> in</span></div></div>`;
+
+    html+=`<div style="padding:8px 12px;font-size:11px;color:var(--dim);">${measurements.length} measurement${measurements.length!==1?'s':''} logged</div>`;
+    html+=`</div>`;
+
+    // Body weight chart if enough data
+    if(measurements.filter(m=>m.weight).length >= 2){
+      const weightPts = measurements.filter(m=>m.weight).slice(-12);
+      const W=300, H=70, pad=4;
+      const weights = weightPts.map(m=>parseFloat(m.weight));
+      const minW = Math.min(...weights)*0.98;
+      const maxW = Math.max(...weights)*1.02;
+      const range = maxW-minW||1;
+      const pts = weightPts.map((m,i)=>({
+        x: pad+(i/(weightPts.length-1))*(W-pad*2),
+        y: H-pad-((parseFloat(m.weight)-minW)/range)*(H-pad*2),
+        w: m.weight,
+        date: m.date
+      }));
+      const linePath = pts.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+      const areaPath = `${linePath} L${pts[pts.length-1].x.toFixed(1)},${H} L${pts[0].x.toFixed(1)},${H} Z`;
+
+      html+=`<div class="chart-card">
+        <div class="chart-ttl">Body weight trend</div>
+        <svg width="100%" viewBox="0 0 ${W} ${H+20}" style="overflow:visible;">
+          <defs><linearGradient id="wGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4D9FFF" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#4D9FFF" stop-opacity="0"/>
+          </linearGradient></defs>
+          <path d="${areaPath}" fill="url(#wGrad)"/>
+          <path d="${linePath}" fill="none" stroke="#4D9FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          ${pts.map((p,i)=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#4D9FFF"/>`).join('')}
+          <text x="${pts[pts.length-1].x.toFixed(1)}" y="${(pts[pts.length-1].y-8).toFixed(1)}" text-anchor="middle" font-size="10" fill="#4D9FFF" font-family="sans-serif" font-weight="bold">${pts[pts.length-1].w}${weightLabel()}</text>
+        </svg>
+      </div>`;
+    }
+  } else {
+    html+=`<div class="chart-card" style="text-align:center;padding:20px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--muted);margin-bottom:6px;">No measurements yet</div>
+      <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">Log your starting point so Coach Rep can track your real progress.</div>
+      <button onclick="openMeasurements()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;padding:10px 20px;">Log baseline measurements</button>
+    </div>`;
   }
 
   content.innerHTML=html;

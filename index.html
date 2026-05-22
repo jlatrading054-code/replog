@@ -1322,58 +1322,23 @@ PROFILE:
 
 Build a program that is genuinely tailored to this specific person. Account for their age, any injuries, their schedule constraints, and their preferences. Do not build a generic program — use their profile to make real decisions.
 
-Return ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after. Use only double quotes. No apostrophes in string values. Valid JSON only:
-{
-  "name": "Program name",
-  "description": "1 sentence description",
-  "duration_weeks": 12,
-  "days": [
-    {
-      "day_of_week": 1,
-      "name": "Day name",
-      "type": "strength|kb|z2|rest",
-      "exercises": [
-        {
-          "name": "Exercise name",
-          "note": "Sets × reps description",
-          "unit": "reps|secs|mins|bw",
-          "is_core": false,
-          "is_timed": false,
-          "default_sets": 3,
-          "default_reps": 8,
-          "order_index": 0
-        }
-      ]
-    }
-  ]
-}
-
-Include 5-7 exercises per training day. Include rest days. Include core exercises (is_core: true) at the end of training days. Include a Zone 2 cardio + mobility day if days allow. Make it appropriate for their level and equipment.`;
+Respond with a brief encouraging message (2-3 sentences) followed by the program using the JSON_PROGRAM marker format. Keep exercise names short (under 30 chars). Max 6 exercises per day. No apostrophes in any string values.`;
 
   try {
     const data = await callCoachRep([{role:'user',content:prompt}], '', 3000, true);
     clearInterval(interval);
-    const responseData = data.content ? data : (data.data || data);
 
-    // Try to get program from Edge Function's program field first
+    // Get program from Edge Function's parsed program field
     let program = data.program || (data.data && data.data.program) || null;
+    
+    // Get welcome message from response text
+    const responseData = data.content ? data : (data.data || data);
+    const welcomeText = responseData.content ? responseData.content.filter(c=>c.type==='text').map(c=>c.text).join('').trim() : '';
 
-    // Fallback: try to parse JSON from text
     if(!program){
-      const text = responseData.content ? responseData.content.filter(c=>c.type==='text').map(c=>c.text).join('') : '';
-      try {
-        let clean = text.replace(/```json|```/g,'').trim();
-        const start = clean.indexOf('{');
-        const end = clean.lastIndexOf('}');
-        if(start !== -1 && end !== -1) clean = clean.slice(start, end+1);
-        clean = clean.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"');
-        program = JSON.parse(clean);
-      } catch(e){
-        console.log('JSON parse failed, using default program');
-      }
+      console.log('No program in response, using default');
+      program = getDefaultProgram();
     }
-
-    if(!program) program = getDefaultProgram();
     program.user_id = currentUser ? currentUser.id : 'guest';
     program.is_active = true;
     program.created_by_ai = true;
@@ -1388,7 +1353,7 @@ Include 5-7 exercises per training day. Include rest days. Include core exercise
 
     conversationHistory.push({
       role:'assistant',
-      content:`Welcome! I've built your personalized program: **${program.name}**. ${program.description} It's designed for ${onboardData.days} days a week and will run for ${program.duration_weeks} weeks. You can start today — just tap Today in the nav. I'll be here to adapt the plan as you progress. Let's get to work! 💪`
+      content: welcomeText || `Welcome! I built your personalized program: ${program.name}. ${program.description||''} Tap Today to start your first session. Let's get to work! 💪`
     });
     lsSet('conversations', conversationHistory);
     initApp();

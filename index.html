@@ -10,7 +10,10 @@
 <title>RepLog</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 <style>
 :root {
   --red:    #B22234;
@@ -887,10 +890,10 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 </div>
 
 <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // ── CACHE BUST ─────────────────────────────────────────────────
-const APP_VERSION = 'replog-v28';
+const APP_VERSION = 'replog-v29';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -1097,8 +1100,12 @@ async function signIn(){
   const err   = document.getElementById('login-error');
   err.style.display='none';
   if(!email||!pass){ showAuthError('login','Please fill in all fields.'); return; }
-  const {error} = await sb.auth.signInWithPassword({email, password:pass});
-  if(error){ showAuthError('login', error.message); return; }
+  try {
+    const {error} = await sb.auth.signInWithPassword({email, password:pass});
+    if(error){ showAuthError('login', error.message); return; }
+  } catch(e) {
+    showAuthError('login', 'Error: ' + e.message);
+  }
 }
 
 async function signUp(){
@@ -1108,9 +1115,13 @@ async function signUp(){
   const err   = document.getElementById('signup-error');
   err.style.display='none';
   if(!email||!pass){ showAuthError('signup','Please fill in email and password.'); return; }
-  const {error} = await sb.auth.signUp({email, password:pass, options:{data:{full_name:name}}});
-  if(error){ showAuthError('signup', error.message); return; }
-  showAuthError('signup','Check your email to confirm your account.', true);
+  try {
+    const {error} = await sb.auth.signUp({email, password:pass, options:{data:{full_name:name}}});
+    if(error){ showAuthError('signup', error.message); return; }
+    showAuthError('signup','Check your email to confirm your account.', true);
+  } catch(e) {
+    showAuthError('signup', 'Error: ' + e.message);
+  }
 }
 
 function showAuthError(form, msg, isSuccess=false){

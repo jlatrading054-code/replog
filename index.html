@@ -55,11 +55,11 @@ h1,h2,h3,h4{font-family:'Barlow Condensed',sans-serif;letter-spacing:0.02em;}
 button{cursor:pointer;font-family:'Barlow',sans-serif;}
 input,textarea,select{font-family:'Barlow',sans-serif;}
 
-/* ── SCREENS ──────────────────────────────────────────────────── */
+/* -- SCREENS ---------------------------------------------------- */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
 
-/* ── AUTH SCREEN ──────────────────────────────────────────────── */
+/* -- AUTH SCREEN ------------------------------------------------ */
 #screen-auth{
   background: linear-gradient(160deg, var(--navy) 0%, #1a0810 50%, var(--navy3) 100%);
   align-items:center;justify-content:center;padding:20px;
@@ -84,7 +84,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .guest-btn{width:100%;background:transparent;border:1px solid var(--bd);color:var(--muted);border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;}
 .guest-btn:hover{border-color:var(--dim);color:var(--text);}
 
-/* ── ONBOARDING ───────────────────────────────────────────────── */
+/* -- ONBOARDING ------------------------------------------------- */
 #screen-onboard{padding:20px;max-width:480px;margin:0 auto;width:100%;}
 .onboard-step{display:none;}
 .onboard-step.active{display:block;}
@@ -108,11 +108,11 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .cb-title{font-size:24px;font-weight:800;font-family:'Barlow Condensed',sans-serif;margin-bottom:8px;}
 .cb-sub{font-size:13px;color:var(--muted);line-height:1.6;}
 
-/* ── MAIN APP ─────────────────────────────────────────────────── */
+/* -- MAIN APP --------------------------------------------------- */
 #screen-app{max-width:480px;margin:0 auto;width:100%;}
 .app-content{flex:1;overflow-y:auto;padding-bottom:calc(64px + env(safe-area-inset-bottom));}
 
-/* ── APP HEADER ───────────────────────────────────────────────── */
+/* -- APP HEADER ------------------------------------------------- */
 .app-header{padding:10px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);}
 .logo{display:flex;align-items:baseline;}
 .l-rep{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:var(--accent);letter-spacing:0.03em;line-height:1;}
@@ -121,7 +121,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .streak-pill{background:rgba(77,159,255,0.12);border:1px solid rgba(77,159,255,0.3);border-radius:20px;padding:3px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--accent2);}
 .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--red2),var(--blue2));display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:#fff;cursor:pointer;}
 
-/* ── WEEK STRIP ───────────────────────────────────────────────── */
+/* -- WEEK STRIP ------------------------------------------------- */
 .week-nav{display:flex;align-items:center;gap:4px;padding:10px 12px 0;}
 .week-nav-btn{background:var(--surface);border:1px solid var(--bd);border-radius:6px;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:14px;padding:0;}
 .week-nav-btn:active{background:var(--surface2);color:var(--text);}
@@ -141,7 +141,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .dc-check{font-size:7px;color:var(--accent2);margin-top:1px;display:none;}
 .dc.complete .dc-check{display:block;}
 
-/* ── SESSION PROGRESS ─────────────────────────────────────────── */
+/* -- SESSION PROGRESS ------------------------------------------- */
 .session-progress{margin:10px 12px 0;background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;}
 .sp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .sp-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
@@ -149,7 +149,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .sp-track{height:5px;background:var(--bd);border-radius:3px;overflow:hidden;}
 .sp-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 0.4s ease;}
 
-/* ── TODAY HEADER ─────────────────────────────────────────────── */
+/* -- TODAY HEADER ----------------------------------------------- */
 .today-hd{padding:10px 14px 6px;display:flex;align-items:flex-start;justify-content:space-between;}
 .today-title{font-size:22px;font-weight:800;line-height:1.1;}
 .today-meta{font-size:11px;color:var(--muted);margin-top:2px;}
@@ -158,7 +158,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .badge-kb{background:rgba(127,119,221,0.12);color:#a09eff;border:1px solid rgba(127,119,221,0.25);}
 .badge-z2{background:rgba(29,158,117,0.12);color:#2ecc71;border:1px solid rgba(29,158,117,0.25);}
 
-/* ── PROGRAM CARD ─────────────────────────────────────────────── */
+/* -- PROGRAM CARD ----------------------------------------------- */
 .prog-card{margin:0 12px 8px;background:var(--surface2);border:1px solid var(--bd);border-left:3px solid var(--accent);border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
 .pc-lbl{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;}
 .pc-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-top:1px;}
@@ -168,7 +168,7 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .pc-track{height:3px;background:var(--bd);border-radius:2px;overflow:hidden;}
 .pc-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;}
 
-/* ── EXERCISES ────────────────────────────────────────────────── */
+/* -- EXERCISES -------------------------------------------------- */
 .ex-section{padding:0 12px;margin-bottom:6px;}
 .sec-lbl{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin:8px 0 5px;display:flex;align-items:center;gap:6px;}
 .sec-lbl::after{content:'';flex:1;height:1px;background:var(--bd);}
@@ -209,26 +209,26 @@ input,textarea,select{font-family:'Barlow',sans-serif;}
 .rchip{flex:1;background:var(--surface2);border:1px solid var(--bd);border-radius:5px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--muted);padding:5px 2px;cursor:pointer;}
 .rchip:active{background:rgba(204,41,54,0.12);border-color:var(--accent);color:var(--accent);}
 
-/* ── COMPLETE BANNER ──────────────────────────────────────────── */
+/* -- COMPLETE BANNER -------------------------------------------- */
 .complete-banner{margin:8px 12px;background:linear-gradient(135deg,rgba(178,34,52,0.12),rgba(77,159,255,0.12));border:1px solid var(--accent2);border-radius:10px;padding:14px;text-align:center;}
 .cb-icon{font-size:24px;margin-bottom:4px;}
 .cb-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--accent2);letter-spacing:0.04em;}
 .cb-sub{font-size:11px;color:var(--muted);margin-top:3px;}
 
-/* ── NOTES + SAVE ─────────────────────────────────────────────── */
+/* -- NOTES + SAVE ----------------------------------------------- */
 .notes-wrap{margin:0 12px 10px;}
 .notes-lbl{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
 textarea.notes-ta{width:100%;background:var(--surface);border:1px solid var(--bd);border-radius:10px;color:var(--text);font-size:13px;padding:10px 12px;resize:none;outline:none;min-height:60px;}
 textarea.notes-ta:focus{border-color:var(--accent);}
 .save-btn{margin:0 12px 12px;width:calc(100% - 24px);background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
 
-/* ── REST DAY ─────────────────────────────────────────────────── */
+/* -- REST DAY --------------------------------------------------- */
 .rest-day{margin:16px 12px;background:var(--surface);border:1px solid var(--bd);border-radius:var(--radius);padding:28px;text-align:center;}
 .rd-icon{font-size:40px;margin-bottom:12px;}
 .rd-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;}
 .rd-body{font-size:13px;color:var(--muted);line-height:1.6;}
 
-/* ── TIMER OVERLAY ────────────────────────────────────────────── */
+/* -- TIMER OVERLAY ---------------------------------------------- */
 .timer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.94);z-index:500;flex-direction:column;align-items:center;justify-content:center;}
 .timer-overlay.active{display:flex;}
 .timer-lbl{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;text-align:center;padding:0 24px;max-width:320px;}
@@ -244,7 +244,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 .t-pause{background:var(--surface2);color:var(--text);border:1px solid var(--bd);}
 .t-stop{background:transparent;color:var(--muted);border:1px solid var(--bd);}
 
-/* ── HISTORY VIEW ─────────────────────────────────────────────── */
+/* -- HISTORY VIEW ----------------------------------------------- */
 .history-wrap{padding:16px;}
 .hist-ttl{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;margin-bottom:14px;}
 .log-card{background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
@@ -257,9 +257,9 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 .empty-state{text-align:center;padding:60px 20px;color:var(--dim);}
 .empty-state h3{font-family:'Barlow Condensed',sans-serif;font-size:20px;color:var(--muted);margin-bottom:6px;}
 
-/* ── STATS VIEW ───────────────────────────────────────────────── */
+/* -- STATS VIEW ------------------------------------------------- */
 .stats-wrap{padding:16px;}
-/* ── MEASUREMENTS ─────────────────────────────────────────────── */
+/* -- MEASUREMENTS ----------------------------------------------- */
 .measure-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:300;align-items:flex-end;justify-content:center;padding-bottom:env(safe-area-inset-bottom);}
 .measure-modal.open{display:flex;}
 .measure-sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:480px;max-height:80vh;overflow-y:auto;}
@@ -306,7 +306,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 .pr-wt{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--accent2);}
 .pr-wt span{font-size:10px;color:var(--muted);}
 
-/* ── COACH REP VIEW ───────────────────────────────────────────── */
+/* -- COACH REP VIEW --------------------------------------------- */
 .coach-wrap{display:flex;flex-direction:column;height:calc(100vh - 64px - env(safe-area-inset-bottom));}
 .coach-header{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .coach-av{width:44px;height:44px;border-radius:50%;background:var(--surface2);overflow:hidden;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);flex-shrink:0;}
@@ -335,7 +335,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 .chat-send{width:34px;height:34px;border-radius:50%;background:var(--accent);border:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0;}
 .chat-send:disabled{opacity:0.4;}
 
-/* ── EXERCISE INFO PANEL ──────────────────────────────────────── */
+/* -- EXERCISE INFO PANEL ---------------------------------------- */
 .ex-info-btn{background:rgba(77,159,255,0.1);border:1px solid rgba(77,159,255,0.25);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;color:var(--accent2);flex-shrink:0;cursor:pointer;line-height:1;}
 .ex-info-panel{display:none;padding:10px 12px;background:var(--surface2);border-top:1px solid var(--bd);}
 .ex-info-panel.open{display:block;}
@@ -358,7 +358,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 .ni-dot{width:3px;height:3px;border-radius:50%;background:var(--accent);opacity:0;margin-top:1px;}
 .ni.active .ni-dot{opacity:1;}
 
-/* ── SETTINGS DROPDOWN ────────────────────────────────────────── */
+/* -- SETTINGS DROPDOWN ------------------------------------------ */
 .settings-menu{display:none;position:fixed;top:56px;right:12px;background:var(--surface);border:1px solid var(--bd);border-radius:10px;padding:6px;z-index:200;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
 .settings-menu.open{display:block;}
 .sm-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:6px;font-size:13px;cursor:pointer;}
@@ -892,8 +892,8 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
-// ── CACHE BUST ─────────────────────────────────────────────────
-const APP_VERSION = 'replog-v29';
+// -- CACHE BUST -------------------------------------------------
+const APP_VERSION = 'replog-v30';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -902,12 +902,12 @@ if('serviceWorker' in navigator){
   });
 }
 
-// ── CONFIG ─────────────────────────────────────────────────────
+// -- CONFIG -----------------------------------------------------
 const SUPABASE_URL = 'https://fxskluiuuhssxpvbcpxq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2tsdWl1dWhzc3hwdmJjcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDA4MjEsImV4cCI6MjA5NDM3NjgyMX0.xqqOz2IGzCoN07WD9rsOk2mEQOEeMIY2ZJs4llmuKE4';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── EXERCISE DATABASE ──────────────────────────────────────────
+// -- EXERCISE DATABASE ------------------------------------------
 const EXERCISE_DB = [{"name":"Barbell bench press","category":"chest","muscles":"Chest, front delts, triceps","desc":"A compound pushing movement performed lying on a bench, pressing a barbell from chest to full arm extension.","cues":["Keep shoulder blades pinched together and back","Bar touches lower chest, not throat","Drive feet into floor for full body tension"]},{"name":"Incline DB press","category":"chest","muscles":"Upper chest, front delts, triceps","desc":"Dumbbell pressing on an incline bench targeting the upper portion of the chest.","cues":["Set bench to 30-45 degrees","Lower dumbbells until elbows are at 90 degrees","Press in a slight arc, bringing dumbbells together at top"]},{"name":"DB bench press","category":"chest","muscles":"Chest, front delts, triceps","desc":"Pressing two dumbbells from chest level to full extension, allowing greater range of motion than barbell.","cues":["Allow slight wrist rotation as you press","Lower until elbows drop just below bench level","Control the descent — don't drop the weight"]},{"name":"Push-ups","category":"chest","muscles":"Chest, front delts, triceps, core","desc":"A bodyweight pressing movement performed with hands on the floor, lowering and raising the body.","cues":["Keep body in a straight plank line throughout","Hands slightly wider than shoulder width","Lower until chest nearly touches floor"]},{"name":"Overhead press","category":"shoulders","muscles":"Front and side delts, triceps, upper traps","desc":"A compound pressing movement lifting a barbell or dumbbells from shoulder height to overhead.","cues":["Brace your core hard before every rep","Press the bar slightly back behind your head at the top","Avoid excessive lower back arch — squeeze glutes"]},{"name":"DB lateral raises","category":"shoulders","muscles":"Side delts","desc":"Raising dumbbells out to the sides to shoulder height, isolating the lateral head of the deltoid.","cues":["Lead with your elbows, not your hands","Stop at shoulder height — going higher traps, not delts","Use a slight forward lean to better target side delts"]},{"name":"Face pulls","category":"shoulders","muscles":"Rear delts, rotator cuff, upper traps","desc":"Pulling a rope attachment toward your face at upper chest height, targeting the rear delts and rotator cuff.","cues":["Pull to forehead level, not chin","Flare elbows out wide as you pull","Externally rotate at the end — show your armpits"]},{"name":"Arnold press","category":"shoulders","muscles":"All three delt heads, triceps","desc":"A dumbbell overhead press variation that adds a rotation, hitting all three heads of the deltoid.","cues":["Start with palms facing you, rotate as you press","Full rotation so palms face forward at top","Control the rotation on the way down too"]},{"name":"Deadlift","category":"back","muscles":"Hamstrings, glutes, lower back, traps, lats","desc":"The king of compound lifts — pulling a loaded barbell from the floor to a standing position.","cues":["Hinge at the hips first, then bend the knees","Keep the bar dragging close to your shins throughout","Drive the floor away — don't think pull, think push"]},{"name":"Barbell / DB rows","category":"back","muscles":"Lats, mid traps, rear delts, biceps","desc":"Pulling a barbell or dumbbells toward your lower chest while hinged forward, building a thick back.","cues":["Hinge to about 45 degrees or lower","Pull to your belly button, not your chest","Squeeze shoulder blades together at the top"]},{"name":"Pull-up / lat pulldown","category":"back","muscles":"Lats, biceps, rear delts","desc":"Pulling your bodyweight up to a bar (pull-up) or a cable down to your chest (lat pulldown), building lat width.","cues":["Start from a dead hang with full arm extension","Drive elbows down and back, not just bend arms","Cross your feet and squeeze glutes for full body tension"]},{"name":"KB Romanian deadlift","category":"back","muscles":"Hamstrings, glutes, lower back","desc":"A single-leg or bilateral hip hinge with a kettlebell, emphasizing the hamstrings and posterior chain.","cues":["Push hips back as far as possible before bending knees","Keep a slight bend in the knee — this is a hinge not a squat","Feel a deep stretch in your hamstrings at the bottom"]},{"name":"Dead hang","category":"back","muscles":"Lats, grip, shoulder decompression","desc":"Hanging from a pull-up bar with straight arms — builds grip strength and decompresses the spine.","cues":["Let your shoulders rise up toward your ears to fully decompress","Breathe slowly and relax into the hang","Work up to 60 seconds over time"]},{"name":"DB hammer curls","category":"back","muscles":"Biceps, brachialis, forearms","desc":"Curling dumbbells with a neutral grip, targeting the brachialis and building arm thickness.","cues":["Keep elbows pinned at your sides throughout","Neutral grip — thumbs pointing up, like a hammer","Control the lowering phase — 2-3 seconds down"]},{"name":"Barbell back squat","category":"legs","muscles":"Quads, glutes, hamstrings, core","desc":"The foundational lower body movement — barbell on the upper back, squatting to depth and standing.","cues":["Push your knees out over your toes as you descend","Hit depth — crease of hip below top of knee","Drive through your whole foot, not just heels"]},{"name":"Bulgarian split squat","category":"legs","muscles":"Quads, glutes, hip flexors","desc":"A single-leg squat with the rear foot elevated on a bench, one of the most effective leg builders.","cues":["Front foot far enough forward that shin stays vertical","Lower straight down, not forward","Use a slow descent to build control — 3 seconds down"]},{"name":"KB goblet squat","category":"legs","muscles":"Quads, glutes, core","desc":"Holding a kettlebell at chest height while squatting — excellent for learning squat mechanics.","cues":["Elbows inside your knees at the bottom","Stay upright — the goblet position helps","Push the floor apart with your feet as you stand"]},{"name":"Hip thrust","category":"legs","muscles":"Glutes, hamstrings","desc":"Driving the hips upward with a barbell across the hips and upper back on a bench — the best glute builder.","cues":["Drive through your heels, not your toes","Squeeze glutes hard at the top — full hip extension","Chin tucked, look forward not up at the top"]},{"name":"Calf raises","category":"legs","muscles":"Gastrocnemius, soleus","desc":"Rising up on the toes to train the calf muscles, performed standing or seated.","cues":["Full range — all the way down for a stretch, all the way up","Pause at the top for a hard squeeze","Calves respond well to high reps — don't rush"]},{"name":"Leg press","category":"legs","muscles":"Quads, glutes, hamstrings","desc":"Pushing a weighted platform away using the legs while seated in a machine.","cues":["Don't lock knees out completely at the top","Feet shoulder width, toes slightly out","Never let your lower back peel off the pad"]},{"name":"KB swings","category":"kettlebell","muscles":"Glutes, hamstrings, core, shoulders","desc":"An explosive hip hinge movement swinging a kettlebell from between the legs to shoulder height.","cues":["This is a HIP HINGE not a squat — hips back, not down","Drive with your hips — the arms just hold the bell","Let the bell float at the top, don't muscle it up"]},{"name":"KB clean & press","category":"kettlebell","muscles":"Full body — legs, core, shoulders, arms","desc":"Cleaning a kettlebell from the floor to the rack position then pressing it overhead — a full body movement.","cues":["Keep the bell close to your body on the clean","Catch it softly in the rack — don't let it crash","Press in a straight line overhead, not forward"]},{"name":"KB windmills","category":"kettlebell","muscles":"Obliques, glutes, shoulders, hamstrings","desc":"Holding a kettlebell overhead, hinging to touch the floor while keeping the arm locked out — builds shoulder stability and lateral core strength.","cues":["Eyes on the bell throughout the movement","Hinge at the hip, don't just bend sideways","Keep the overhead arm completely locked out"]},{"name":"Renegade rows","category":"kettlebell","muscles":"Back, biceps, core, shoulders","desc":"A plank position row alternating each arm, combining core stability with upper back strength.","cues":["Start in a solid plank — no hip rotation","Row to your hip, not your armpit","The wider your feet, the more stable — start wide"]},{"name":"Farmer carries","category":"kettlebell","muscles":"Grip, traps, core, legs","desc":"Walking with heavy weights in each hand — builds grip strength, traps, and full body tension.","cues":["Stand tall — don't let the weight pull you sideways","Take short purposeful steps","Brace your core like you're about to take a punch"]},{"name":"KB arm bar","category":"kettlebell","muscles":"Shoulder stability, rotator cuff, thoracic","desc":"Lying on your back holding a kettlebell overhead while rolling to your side — builds shoulder stability and thoracic rotation.","cues":["Keep the arm completely vertical throughout","Move slowly and controlled — this is not a strength exercise","Feel the shoulder open up as you roll"]},{"name":"Plank","category":"core","muscles":"Core, shoulders, glutes","desc":"An isometric hold in a push-up position, building full-body tension and core stability.","cues":["Squeeze everything — glutes, abs, quads","Don't let your hips sag or pike up","Breathe steadily — holding your breath defeats the purpose"]},{"name":"Dead bug","category":"core","muscles":"Deep core, hip flexors","desc":"Lying on your back, extending opposite arm and leg while keeping your lower back pressed to the floor.","cues":["Lower back MUST stay flat on the floor throughout","Move slowly — the slower the harder","Exhale fully as you extend to brace deeper"]},{"name":"Ab wheel rollout","category":"core","muscles":"Deep core, lats, hip flexors","desc":"Rolling out from a kneeling position using an ab wheel, one of the most effective core exercises.","cues":["Start with partial rollouts until you build strength","Hips stay low — don't let them pike up","Pull back using your abs, not your arms"]},{"name":"Hanging knee raises","category":"core","muscles":"Lower abs, hip flexors","desc":"Hanging from a pull-up bar and raising your knees toward your chest.","cues":["Don't swing — control the movement","Curl your pelvis up at the top for full contraction","Lower slowly — 2-3 seconds down"]},{"name":"Side plank","category":"core","muscles":"Obliques, glutes, shoulders","desc":"An isometric hold on one arm and the side of one foot, targeting the lateral core.","cues":["Stack feet or stagger for balance","Drive your hip toward the ceiling","Keep your body in one straight line — no sagging"]},{"name":"V-ups","category":"core","muscles":"Abs, hip flexors","desc":"Simultaneously raising arms and legs to meet in the middle, forming a V shape.","cues":["Keep legs straight and arms extended throughout","Lead with your chest, not just your hands","Lower back down slowly — resist gravity"]},{"name":"Reverse crunch","category":"core","muscles":"Lower abs","desc":"Lying on your back, pulling your knees to your chest by curling the pelvis up off the floor.","cues":["Curl the pelvis UP — not just pulling knees to chest","Slow and controlled — feel the lower abs working","Hands flat on the floor for stability"]},{"name":"Pallof press","category":"core","muscles":"Obliques, deep core — anti-rotation","desc":"Standing sideways to a cable or band, pressing it straight out and back in. The core fights rotation the entire time.","cues":["Stand perpendicular to the anchor point","Press straight out — don't let the cable pull you sideways","The further from the anchor, the harder it gets"]},{"name":"McGill big 3","category":"core","muscles":"Deep core stability","desc":"Three exercises from Dr. Stuart McGill: curl-up, side plank, and bird dog — the gold standard for spine health and core stability.","cues":["Curl-up: hands under lower back, one leg flat, one bent","Side plank: hold each side equal time","Bird dog: opposite arm and leg, slow and deliberate"]},{"name":"Suitcase carry","category":"core","muscles":"Obliques, core, grip, traps","desc":"Carrying a heavy weight in one hand while walking — the core fights lateral bending the entire time.","cues":["Stand completely upright — don't lean toward the weight","Take deliberate steps, don't rush","Switch hands and repeat — equal work each side"]},{"name":"90/90 hip stretch","category":"mobility","muscles":"Hip flexors, glutes, hip rotators","desc":"Sitting with both legs at 90 degree angles — front leg external rotation, back leg internal rotation — one of the most complete hip stretches.","cues":["Sit tall — don't hunch forward","Press the back knee gently toward the floor","Breathe into the stretch and let it release gradually"]},{"name":"Half-kneeling hip flexor stretch","category":"mobility","muscles":"Hip flexors, psoas","desc":"One knee on the floor, other foot forward — tucking the pelvis under to stretch the front of the hip deeply.","cues":["Tuck your tailbone under before leaning forward","You should feel it deep in the front of the down knee's hip","Squeeze the glute of the down leg to increase the stretch"]},{"name":"Hip flexor marches","category":"mobility","muscles":"Hip flexors, glutes","desc":"Standing and slowly driving one knee up while squeezing the opposite glute — activates and resets hip flexor patterns.","cues":["Drive the knee all the way up to hip height","Squeeze the standing glute hard throughout","Move slowly — this is activation, not cardio"]},{"name":"Foam roller thoracic extension","category":"mobility","muscles":"Thoracic spine, mid back","desc":"Lying back over a foam roller positioned across the mid-back to open up thoracic extension.","cues":["Position roller at mid-back — NOT lower back","Support your head with your hands","Work up and down the thoracic spine in small increments"]},{"name":"Thread the needle","category":"mobility","muscles":"Thoracic rotation, shoulder","desc":"On all fours, reaching one arm under the body to touch the opposite shoulder to the floor, creating thoracic rotation.","cues":["Let your shoulder fully touch the floor","Open all the way back up and reach as high as you can","Move slowly — feel each segment of your spine rotating"]},{"name":"Cat-cow","category":"mobility","muscles":"Thoracic spine, lumbar spine","desc":"On all fours, alternating between arching and rounding the spine — improves spinal mobility and warms up the back.","cues":["Initiate from your mid-back, not just your lower back","Move segment by segment — slow and deliberate","Exhale as you round, inhale as you arch"]},{"name":"Zone 2 cardio","category":"cardio","muscles":"Heart, lungs, aerobic system","desc":"Sustained aerobic exercise at a comfortable intensity — walking, cycling, rowing, or any cardio where you can hold a full conversation.","cues":["Target HR: 120–135 bpm or conversational pace","If you can't speak in full sentences, slow down","Consistency over intensity — 30+ minutes is the goal"]}];
 
 async function callCoachRep(messages, system, max_tokens, detect_program=false){
@@ -923,7 +923,7 @@ function getExerciseInfo(name){
   return EXERCISE_DB.find(e => n.includes(e.name.toLowerCase()) || e.name.toLowerCase().includes(n.split(' ')[0])) || null;
 }
 
-// ── STATE ──────────────────────────────────────────────────────
+// -- STATE ------------------------------------------------------
 let currentUser = null;
 let currentDate = new Date();
 let weekOffset = 0;
@@ -943,12 +943,12 @@ let activeProgram = null;
 let conversationHistory = [];
 let isGuest = false;
 
-// ── STORAGE HELPERS (local fallback for guests) ─────────────────
+// -- STORAGE HELPERS (local fallback for guests) -----------------
 function lsGet(k){ try{ return JSON.parse(localStorage.getItem('rl_'+k)||'null'); }catch(e){return null;} }
 function lsSet(k,v){ localStorage.setItem('rl_'+k, JSON.stringify(v)); }
 function getSessionKey(d){ return 'session_'+(d||currentDate).toISOString().slice(0,10); }
 
-// ── UNITS ──────────────────────────────────────────────────────
+// -- UNITS ------------------------------------------------------
 let currentUnits = lsGet('units') || 'lbs';
 
 function setUnits(u){
@@ -966,7 +966,7 @@ function convertWeight(lbs){
 
 function weightLabel(){ return currentUnits; }
 
-// ── EXPORT DATA ────────────────────────────────────────────────
+// -- EXPORT DATA ------------------------------------------------
 function exportData(){
   const keys = Object.keys(localStorage).filter(k=>k.startsWith('rl_'));
   const data = {};
@@ -981,7 +981,7 @@ function exportData(){
   document.getElementById('settingsMenu').classList.remove('open');
 }
 
-// ── CHANGE PASSWORD ────────────────────────────────────────────
+// -- CHANGE PASSWORD --------------------------------------------
 function importFromSettings(){
   document.getElementById('settingsMenu').classList.remove('open');
   // Switch to Coach Rep tab and pre-fill a message
@@ -1015,7 +1015,7 @@ async function changePassword(){
   alert('Password updated successfully.');
 }
 
-// ── SETTINGS INIT ──────────────────────────────────────────────
+// -- SETTINGS INIT ----------------------------------------------
 function initSettings(){
   const t = lsGet('theme') || 'dark';
   setTheme(t);
@@ -1045,7 +1045,7 @@ document.addEventListener('click', e=>{
   if(!e.target.closest('.avatar') && !e.target.closest('.settings-menu')) menu.classList.remove('open');
 });
 
-// ── TIMER ──────────────────────────────────────────────────────
+// -- TIMER ------------------------------------------------------
 const CIRC = 2*Math.PI*88;
 let timerInterval=null, timerTotal=0, timerRemaining=0, timerPaused=false;
 
@@ -1086,7 +1086,7 @@ function timerStop(){ if(timerInterval) clearInterval(timerInterval); timerInter
 function launchRestTimer(s){ startTimer(s,'Rest Timer'); }
 function launchExTimer(s,name){ startTimer(s,name); }
 
-// ── AUTH ───────────────────────────────────────────────────────
+// -- AUTH -------------------------------------------------------
 function switchAuthTab(tab, btn){
   document.getElementById('auth-login').style.display = tab==='login'?'block':'none';
   document.getElementById('auth-signup').style.display = tab==='signup'?'block':'none';
@@ -1170,7 +1170,7 @@ function continueAsGuest(){
   }
 }
 
-// ── AUTH STATE LISTENER ────────────────────────────────────────
+// -- AUTH STATE LISTENER ----------------------------------------
 sb.auth.onAuthStateChange(async (event, session)=>{
   if(session && session.user){
     currentUser = session.user;
@@ -1189,13 +1189,13 @@ sb.auth.onAuthStateChange(async (event, session)=>{
   }
 });
 
-// ── SCREEN MANAGEMENT ──────────────────────────────────────────
+// -- SCREEN MANAGEMENT ------------------------------------------
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ── ONBOARDING ─────────────────────────────────────────────────
+// -- ONBOARDING -------------------------------------------------
 function initOnboarding(){
   const steps = 8;
   const prog = document.getElementById('onboardProgress');
@@ -1546,7 +1546,7 @@ function getDefaultProgram(){
   };
 }
 
-// ── INIT APP ───────────────────────────────────────────────────
+// -- INIT APP ---------------------------------------------------
 function initApp(){
   showScreen('screen-app');
   loadProfile();
@@ -1572,7 +1572,7 @@ function initApp(){
   setTimeout(()=>checkWeeklyPlanningNeeded(), 1500);
 }
 
-// ── TABS ───────────────────────────────────────────────────────
+// -- TABS -------------------------------------------------------
 function showTab(tab){
   document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
   document.getElementById('tab-'+tab).style.display='flex';
@@ -1585,7 +1585,7 @@ function showTab(tab){
   if(tab==='today'){ renderWeekStrip(); renderToday(); }
 }
 
-// ── WEEK STRIP ─────────────────────────────────────────────────
+// -- WEEK STRIP -------------------------------------------------
 function renderWeekStrip(){
   const strip = document.getElementById('weekStrip');
   if(!strip) return;
@@ -1637,7 +1637,7 @@ function selectDay(i){
   renderToday();
 }
 
-// ── TODAY ──────────────────────────────────────────────────────
+// -- TODAY ------------------------------------------------------
 function swapWorkoutPrompt(){
   const trainingDays = activeProgram ? activeProgram.days.filter(d=>d.type!=='rest') : [];
   if(trainingDays.length===0) return;
@@ -1911,7 +1911,7 @@ function getSessionSets(){
   });
 }
 
-// ── MEASUREMENTS ───────────────────────────────────────────────
+// -- MEASUREMENTS -----------------------------------------------
 function openMeasurements(){
   document.getElementById('measureModal').classList.add('open');
   const today = new Date().toISOString().slice(0,10);
@@ -1996,7 +1996,7 @@ function showMeasurementNudge(type){
   document.body.appendChild(banner);
 }
 
-// ── WEEKLY PLANNING CHECK-IN ────────────────────────────────────
+// -- WEEKLY PLANNING CHECK-IN ------------------------------------
 function checkWeeklyPlanningNeeded(){
   if(!activeProgram || !currentUser) return;
   const today = new Date();
@@ -2367,7 +2367,7 @@ function renderStreak(){
   if(pill) pill.textContent=`🔥 ${streak} day${streak!==1?'s':''}`;
 }
 
-// ── HISTORY ────────────────────────────────────────────────────
+// -- HISTORY ----------------------------------------------------
 function renderHistory(){
   const content=document.getElementById('historyContent');
   const keys=Object.keys(localStorage).filter(k=>k.startsWith('rl_session_')).sort().reverse();
@@ -2401,14 +2401,14 @@ function renderHistory(){
   content.innerHTML=html;
 }
 
-// ── STATS ──────────────────────────────────────────────────────
+// -- STATS ------------------------------------------------------
 function renderStats(){
   const content=document.getElementById('statsContent');
   const keys=Object.keys(localStorage).filter(k=>k.startsWith('rl_session_')).sort();
   const today=new Date();
   const weekStart=new Date(today); weekStart.setDate(today.getDate()-today.getDay());
 
-  // ── STAT CARDS ──────────────────────────────────────────────
+  // -- STAT CARDS ----------------------------------------------
   const thisWeek=keys.filter(k=>new Date(k.replace('rl_session_','')+'T12:00:00')>=weekStart).length;
   const totalSessions=keys.length;
 
@@ -2426,7 +2426,7 @@ function renderStats(){
     } else if(i>0) break;
   }
 
-  // ── PRs ─────────────────────────────────────────────────────
+  // -- PRs -----------------------------------------------------
   const prs={};
   const prHistory={}; // for charts: {exName: [{date, weight}]}
   keys.forEach(k=>{
@@ -2450,7 +2450,7 @@ function renderStats(){
     });
   });
 
-  // ── WEEKLY SESSIONS CHART DATA ───────────────────────────────
+  // -- WEEKLY SESSIONS CHART DATA -------------------------------
   const weekData=[];
   for(let w=7;w>=0;w--){
     const wStart=new Date(today); wStart.setDate(today.getDate()-today.getDay()-(w*7));
@@ -2463,13 +2463,13 @@ function renderStats(){
     weekData.push({count,label});
   }
 
-  // ── MEASUREMENTS DATA ──────────────────────────────────────────
+  // -- MEASUREMENTS DATA ------------------------------------------
   const measurements = getMeasurements();
   const latestM = measurements.length > 0 ? measurements[measurements.length-1] : null;
   const firstM = measurements.length > 1 ? measurements[0] : null;
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  // ── BUILD HTML ───────────────────────────────────────────────
+  // -- BUILD HTML -----------------------------------------------
   let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
     <div class="stats-ttl" style="margin-bottom:0;">Your Stats</div>
     <button onclick="openMeasurements()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:7px 12px;">+ Measurements</button>
@@ -2497,7 +2497,7 @@ function renderStats(){
       </div>
     </div>`;
 
-  // ── WEEKLY FREQUENCY CHART ───────────────────────────────────
+  // -- WEEKLY FREQUENCY CHART -----------------------------------
   const maxW=Math.max(...weekData.map(w=>w.count),1);
   const chartH=80;
   const chartW=300;
@@ -2520,7 +2520,7 @@ function renderStats(){
     </svg>
   </div>`;
 
-  // ── EXERCISE PROGRESS CHART ──────────────────────────────────
+  // -- EXERCISE PROGRESS CHART ----------------------------------
   const exWithData=Object.keys(prHistory).filter(k=>prHistory[k].length>=2);
   if(exWithData.length>0){
     // Default to first exercise with enough data
@@ -2535,7 +2535,7 @@ function renderStats(){
     </div>`;
   }
 
-  // ── PERSONAL RECORDS ─────────────────────────────────────────
+  // -- PERSONAL RECORDS -----------------------------------------
   if(Object.keys(prs).length>0){
     const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     html+=`<div class="pr-card"><div class="pr-ttl">Personal Records — heaviest logged</div>`;
@@ -2554,7 +2554,7 @@ function renderStats(){
     html+=`<div style="text-align:center;padding:30px;color:var(--dim);font-size:13px;">Log some weights and your PRs will appear here.</div>`;
   }
 
-  // ── MEASUREMENTS SECTION ─────────────────────────────────────
+  // -- MEASUREMENTS SECTION -------------------------------------
   if(latestM){
     const weightChange = firstM && latestM.weight && firstM.weight
       ? (parseFloat(latestM.weight) - parseFloat(firstM.weight)).toFixed(1)
@@ -2701,7 +2701,7 @@ function renderExChart(exName, history){
   container.innerHTML=svg;
 }
 
-// ── COACH REP ──────────────────────────────────────────────────
+// -- COACH REP --------------------------------------------------
 function loadProgramFromChat(program, btn){
   // Set as active program
   program.is_active = true;
@@ -2881,7 +2881,7 @@ When the user tells you their schedule changed, they want different training day
   document.getElementById('chatSendBtn').disabled=false;
 }
 
-// ── INIT ───────────────────────────────────────────────────────
+// -- INIT -------------------------------------------------------
 // Check if already logged in or has guest data
 (async function(){
   const {data:{session}} = await sb.auth.getSession();

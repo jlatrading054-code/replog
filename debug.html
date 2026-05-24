@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #0a0e1a; color: white; font-family: sans-serif; padding: 20px; }
+button { background: #CC2936; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; width: 100%; margin: 10px 0; }
+#log { background: #111; padding: 10px; border-radius: 8px; margin-top: 20px; font-size: 12px; min-height: 100px; }
+</style>
+</head>
+<body>
+<h2>RepLog Debug</h2>
+<button onclick="test1()">Test 1: Basic JS</button>
+<button onclick="test2()">Test 2: Supabase loaded</button>
+<button onclick="test3()">Test 3: Sign in</button>
+<div id="log">Tap a button to test...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+<script>
+function log(msg) {
+  document.getElementById('log').innerHTML += '<br>' + msg;
+}
+
+function test1() {
+  log('✅ Basic JS works');
+}
+
+function test2() {
+  if(typeof supabase !== 'undefined') {
+    log('✅ Supabase loaded: ' + typeof supabase.createClient);
+  } else {
+    log('❌ Supabase NOT loaded');
+  }
+}
+
+function test3() {
+  try {
+    const sb = supabase.createClient(
+      'https://fxskluiuuhssxpvbcpxq.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2tsdWl1dWhzc3hwdmJjcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDA4MjEsImV4cCI6MjA5NDM3NjgyMX0.xqqOz2IGzCoN07WD9rsOk2mEQOEeMIY2ZJs4llmuKE4'
+    );
+    log('✅ Supabase client created');
+    sb.auth.signInWithPassword({email:'test@test.com', password:'test123'})
+      .then(({error}) => log(error ? '⚠️ Auth error: ' + error.message : '✅ Auth call worked'))
+      .catch(e => log('❌ Auth exception: ' + e.message));
+  } catch(e) {
+    log('❌ Exception: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>

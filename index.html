@@ -907,7 +907,7 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v39';
+const APP_VERSION = 'replog-v40';
 // JS LOADED INDICATOR
 document.addEventListener('DOMContentLoaded', function(){
   const ind = document.createElement('div');
@@ -934,6 +934,9 @@ if(typeof supabase === 'undefined'){
 }
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// CHECKPOINT B - supabase init done
+try{ var cb=document.createElement('div'); cb.style.cssText='position:fixed;top:30px;left:0;right:0;background:purple;color:white;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; cb.textContent='CHECKPOINT B - sb init done'; document.body.appendChild(cb); setTimeout(function(){cb.remove();},5000); }catch(e){}
 
 // -- EXERCISE DATABASE ------------------------------------------
 const EXERCISE_DB = [

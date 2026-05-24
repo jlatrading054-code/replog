@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepLog Auth Test</title>
+<style>
+body{background:#0a0e1a;color:#F8F9FB;font-family:sans-serif;padding:20px;}
+button{background:#CC2936;color:#fff;border:none;border-radius:8px;padding:13px;width:100%;font-size:16px;margin-top:8px;}
+input{width:100%;background:#1a2236;border:1px solid #1e2d42;border-radius:8px;padding:10px 12px;color:#F8F9FB;font-size:14px;margin-bottom:10px;box-sizing:border-box;}
+#status{margin-top:20px;background:#111;padding:10px;border-radius:8px;font-size:13px;min-height:60px;}
+</style>
+</head>
+<body>
+<h2>RepLog Auth Test</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="pass" placeholder="Password">
+<button onclick="doSignIn()">Sign In</button>
+<button onclick="doSignUp()" style="background:#1A6FD4;margin-top:6px;">Sign Up</button>
+<div id="status">Waiting...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://fxskluiuuhssxpvbcpxq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2tsdWl1dWhzc3hwdmJjcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDA4MjEsImV4cCI6MjA5NDM3NjgyMX0.xqqOz2IGzCoN07WD9rsOk2mEQOEeMIY2ZJs4llmuKE4';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function log(msg){ document.getElementById('status').innerHTML += '<br>' + msg; }
+
+async function doSignIn(){
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  log('Attempting sign in...');
+  try {
+    const {data, error} = await sb.auth.signInWithPassword({email, password:pass});
+    if(error) log('Error: ' + error.message);
+    else log('Success! User: ' + data.user.email);
+  } catch(e) {
+    log('Exception: ' + e.message);
+  }
+}
+
+async function doSignUp(){
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  log('Attempting sign up...');
+  try {
+    const {data, error} = await sb.auth.signUp({email, password:pass});
+    if(error) log('Error: ' + error.message);
+    else log('Check email for confirmation!');
+  } catch(e) {
+    log('Exception: ' + e.message);
+  }
+}
+
+log('Script loaded OK');
+</script>
+</body>
+</html>

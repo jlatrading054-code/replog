@@ -889,6 +889,16 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ── CACHE BUST ─────────────────────────────────────────────────
+const APP_VERSION = 'replog-v28';
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(reg=>{
+      reg.active && reg.active.scriptURL && !reg.active.scriptURL.includes(APP_VERSION) && reg.unregister();
+    });
+  });
+}
+
 // ── CONFIG ─────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://fxskluiuuhssxpvbcpxq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2tsdWl1dWhzc3hwdmJjcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDA4MjEsImV4cCI6MjA5NDM3NjgyMX0.xqqOz2IGzCoN07WD9rsOk2mEQOEeMIY2ZJs4llmuKE4';

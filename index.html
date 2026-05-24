@@ -16,7 +16,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <style>
 :root {
   --red:    #B22234;
@@ -905,9 +904,10 @@ try {
 </div>
 
 <!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v35';
+const APP_VERSION = 'replog-v36';
 // JS LOADED INDICATOR
 document.addEventListener('DOMContentLoaded', function(){
   const ind = document.createElement('div');
@@ -1165,6 +1165,15 @@ function switchAuthTab(tab, btn){
   document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
+
+// CHECKPOINT - if we get here, script loaded past line 1169
+try {
+  var chk = document.createElement('div');
+  chk.style.cssText = 'position:fixed;top:30px;left:0;right:0;background:blue;color:white;text-align:center;padding:4px;font-size:11px;z-index:99999;';
+  chk.textContent = 'CHECKPOINT OK - auth loading';
+  document.body.appendChild(chk);
+  setTimeout(function(){ chk.remove(); }, 4000);
+} catch(e) {}
 
 async function signIn(){
   const email = document.getElementById('login-email').value.trim();

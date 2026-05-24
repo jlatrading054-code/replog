@@ -907,7 +907,7 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v36';
+const APP_VERSION = 'replog-v38';
 // JS LOADED INDICATOR
 document.addEventListener('DOMContentLoaded', function(){
   const ind = document.createElement('div');
@@ -981,6 +981,9 @@ const EXERCISE_DB = [
   {"name":"Cat-cow","category":"mobility","muscles":"Thoracic spine, lumbar spine","desc":"On all fours, alternating between arching and rounding the spine — improves spinal mobility and warms up the back.","cues":["Initiate from your mid-back, not just your lower back","Move segment by segment — slow and deliberate","Exhale as you round, inhale as you arch"]},
   {"name":"Zone 2 cardio","category":"cardio","muscles":"Heart, lungs, aerobic system","desc":"Sustained aerobic exercise at a comfortable intensity — walking, cycling, rowing, or any cardio where you can hold a full conversation.","cues":["Target HR: 120–135 bpm or conversational pace","If you can't speak in full sentences, slow down","Consistency over intensity — 30+ minutes is the goal"]}
 ];
+
+// CHECKPOINT A - after EXERCISE_DB
+try{ var ca=document.createElement('div'); ca.style.cssText='position:fixed;top:30px;left:0;right:0;background:blue;color:white;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; ca.textContent='CHECKPOINT A - after DB'; document.body.appendChild(ca); setTimeout(function(){ca.remove();},5000); }catch(e){}
 
 async function callCoachRep(messages, system, max_tokens, detect_program=false){
   const { data, error } = await sb.functions.invoke('coach-rep-v2', {
@@ -1943,6 +1946,9 @@ function toggleDone(ei, si, el){
   autoSave();
   checkSessionComplete();
 }
+
+// MIDPOINT CHECKPOINT
+try{ var mp=document.createElement('div'); mp.style.cssText='position:fixed;top:60px;left:0;right:0;background:orange;color:black;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; mp.textContent='MIDPOINT OK'; document.body.appendChild(mp); setTimeout(function(){mp.remove();},4000); }catch(e){}
 
 function addSet(ei,e){
   e.stopPropagation();

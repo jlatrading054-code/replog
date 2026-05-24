@@ -907,7 +907,7 @@ try {
 <!-- Supabase -->
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v34';
+const APP_VERSION = 'replog-v35';
 // JS LOADED INDICATOR
 document.addEventListener('DOMContentLoaded', function(){
   const ind = document.createElement('div');
@@ -927,6 +927,12 @@ if('serviceWorker' in navigator){
 // -- CONFIG -----------------------------------------------------
 const SUPABASE_URL = 'https://fxskluiuuhssxpvbcpxq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2tsdWl1dWhzc3hwdmJjcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDA4MjEsImV4cCI6MjA5NDM3NjgyMX0.xqqOz2IGzCoN07WD9rsOk2mEQOEeMIY2ZJs4llmuKE4';
+
+if(typeof supabase === 'undefined'){
+  document.body.innerHTML = '<div style="background:#0a0e1a;color:#ff6b6b;padding:40px;font-family:sans-serif;text-align:center;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;"><h2 style="color:#ff6b6b;">Connection Error</h2><p style="margin-top:10px;color:#7a8ba0;">Could not load required resources. Please check your connection.</p><button onclick="location.reload()" style="margin-top:20px;background:#CC2936;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;">Reload</button></div>';
+  throw new Error('Supabase library not loaded');
+}
+
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // -- EXERCISE DATABASE ------------------------------------------

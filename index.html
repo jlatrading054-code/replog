@@ -379,6 +379,18 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 </style>
 </head>
 <body>
+<script>
+// Early test - runs before anything else
+try {
+  document.addEventListener('DOMContentLoaded', function(){
+    var d = document.createElement('div');
+    d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:lime;color:black;text-align:center;padding:6px;font-size:14px;font-weight:bold;z-index:99999;';
+    d.textContent = 'EARLY JS OK';
+    document.body.appendChild(d);
+    setTimeout(function(){ d.remove(); }, 4000);
+  });
+} catch(e) {}
+</script>
 
 <!-- TIMER OVERLAY -->
 <div class="timer-overlay" id="timerOverlay">
@@ -895,7 +907,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <!-- Supabase -->
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v33';
+const APP_VERSION = 'replog-v34';
 // JS LOADED INDICATOR
 document.addEventListener('DOMContentLoaded', function(){
   const ind = document.createElement('div');

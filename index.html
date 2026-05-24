@@ -893,7 +893,15 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v31';
+const APP_VERSION = 'replog-v32';
+// JS LOADED INDICATOR
+document.addEventListener('DOMContentLoaded', function(){
+  const ind = document.createElement('div');
+  ind.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#2ecc71;color:#000;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:9999;';
+  ind.textContent = 'JS v32 loaded OK';
+  document.body.appendChild(ind);
+  setTimeout(()=>ind.remove(), 3000);
+});
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{

@@ -378,18 +378,6 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 </style>
 </head>
 <body>
-<script>
-// Early test - runs before anything else
-try {
-  document.addEventListener('DOMContentLoaded', function(){
-    var d = document.createElement('div');
-    d.style.cssText = 'position:fixed;top:0;left:0;right:0;background:lime;color:black;text-align:center;padding:6px;font-size:14px;font-weight:bold;z-index:99999;';
-    d.textContent = 'EARLY JS OK';
-    document.body.appendChild(d);
-    setTimeout(function(){ d.remove(); }, 4000);
-  });
-} catch(e) {}
-</script>
 
 <!-- TIMER OVERLAY -->
 <div class="timer-overlay" id="timerOverlay">
@@ -907,15 +895,7 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v40';
-// JS LOADED INDICATOR
-document.addEventListener('DOMContentLoaded', function(){
-  const ind = document.createElement('div');
-  ind.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#2ecc71;color:#000;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:9999;';
-  ind.textContent = 'JS v32 loaded OK';
-  document.body.appendChild(ind);
-  setTimeout(()=>ind.remove(), 3000);
-});
+const APP_VERSION = 'replog-v42';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -935,8 +915,6 @@ if(typeof supabase === 'undefined'){
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// CHECKPOINT B - supabase init done
-try{ var cb=document.createElement('div'); cb.style.cssText='position:fixed;top:30px;left:0;right:0;background:purple;color:white;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; cb.textContent='CHECKPOINT B - sb init done'; document.body.appendChild(cb); setTimeout(function(){cb.remove();},5000); }catch(e){}
 
 // -- EXERCISE DATABASE ------------------------------------------
 const EXERCISE_DB = [
@@ -984,9 +962,6 @@ const EXERCISE_DB = [
   {"name":"Cat-cow","category":"mobility","muscles":"Thoracic spine, lumbar spine","desc":"On all fours, alternating between arching and rounding the spine - improves spinal mobility and warms up the back.","cues":["Initiate from your mid-back, not just your lower back","Move segment by segment - slow and deliberate","Exhale as you round, inhale as you arch"]},
   {"name":"Zone 2 cardio","category":"cardio","muscles":"Heart, lungs, aerobic system","desc":"Sustained aerobic exercise at a comfortable intensity - walking, cycling, rowing, or any cardio where you can hold a full conversation.","cues":["Target HR: 120-135 bpm or conversational pace","If you can't speak in full sentences, slow down","Consistency over intensity - 30+ minutes is the goal"]}
 ];
-
-// CHECKPOINT A - after EXERCISE_DB
-try{ var ca=document.createElement('div'); ca.style.cssText='position:fixed;top:30px;left:0;right:0;background:blue;color:white;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; ca.textContent='CHECKPOINT A - after DB'; document.body.appendChild(ca); setTimeout(function(){ca.remove();},5000); }catch(e){}
 
 async function callCoachRep(messages, system, max_tokens, detect_program=false){
   const { data, error } = await sb.functions.invoke('coach-rep-v2', {
@@ -1171,15 +1146,6 @@ function switchAuthTab(tab, btn){
   document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
-
-// CHECKPOINT - if we get here, script loaded past line 1169
-try {
-  var chk = document.createElement('div');
-  chk.style.cssText = 'position:fixed;top:30px;left:0;right:0;background:blue;color:white;text-align:center;padding:4px;font-size:11px;z-index:99999;';
-  chk.textContent = 'CHECKPOINT OK - auth loading';
-  document.body.appendChild(chk);
-  setTimeout(function(){ chk.remove(); }, 4000);
-} catch(e) {}
 
 async function signIn(){
   const email = document.getElementById('login-email').value.trim();
@@ -1950,9 +1916,6 @@ function toggleDone(ei, si, el){
   checkSessionComplete();
 }
 
-// MIDPOINT CHECKPOINT
-try{ var mp=document.createElement('div'); mp.style.cssText='position:fixed;top:60px;left:0;right:0;background:orange;color:black;text-align:center;padding:4px;font-size:11px;font-weight:bold;z-index:99999;'; mp.textContent='MIDPOINT OK'; document.body.appendChild(mp); setTimeout(function(){mp.remove();},4000); }catch(e){}
-
 function addSet(ei,e){
   e.stopPropagation();
   const dow=currentDate.getDay();
@@ -2563,7 +2526,7 @@ function renderStats(){
   let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
     <div class="stats-ttl" style="margin-bottom:0;">Your Stats</div>
     <button onclick="openMeasurements()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:7px 12px;">+ Measurements</button>
-  </div>`;
+  </div>
     <div class="stat-grid">
       <div class="stat-card hl">
         <div class="stat-lbl">This week</div>

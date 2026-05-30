@@ -895,7 +895,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v45';
+const APP_VERSION = 'replog-v46';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -2911,8 +2911,6 @@ When the user tells you their schedule changed, they want different training day
 
   try{
     const data=await callCoachRep(conversationHistory, systemPrompt, 4000, true);
-    console.log('Raw response:', JSON.stringify(data));
-    console.log('Program field:', data.program, 'Data.data:', data.data?.program);
     const response = data.content ? data : (data.data || data);
     let reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
 
@@ -2963,12 +2961,6 @@ When the user tells you their schedule changed, they want different training day
         <div class="load-program-success">✓ Program loaded - check Today tab!</div>
       `;
       document.getElementById('chatArea').appendChild(wrap);
-    } else if(response._debug){
-      // Temporary diagnostic - shows why no program came through
-      const dbg = document.createElement('div');
-      dbg.style.cssText = 'font-size:10px;color:#7a8ba0;padding:8px;background:rgba(0,0,0,0.3);border-radius:6px;margin-top:6px;font-family:monospace;';
-      dbg.textContent = 'debug: ' + response._debug;
-      document.getElementById('chatArea').appendChild(dbg);
     }
 
     document.getElementById('chatArea').scrollTop = document.getElementById('chatArea').scrollHeight;

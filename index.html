@@ -895,7 +895,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v43';
+const APP_VERSION = 'replog-v44';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -2018,12 +2018,31 @@ function checkMeasurementReminder(){
   const today = new Date();
   if(measurements.length === 0){
     if(!lsGet('onboarded_date')) lsSet('onboarded_date', today.toISOString().slice(0,10));
+    // Only nudge for baseline if not recently dismissed
+    const dismissedAt = lsGet('baseline_nudge_dismissed');
+    if(dismissedAt){
+      const daysSinceDismiss = Math.floor((today - new Date(dismissedAt)) / (1000*60*60*24));
+      if(daysSinceDismiss < 3) return; // Don't nag for 3 days after dismissal
+    }
     setTimeout(()=> showMeasurementNudge('baseline'), 4000);
     return;
   }
   const lastMeasure = new Date(measurements[measurements.length-1].date+'T12:00:00');
   const daysSince = Math.floor((today - lastMeasure) / (1000*60*60*24));
-  if(daysSince >= 28) setTimeout(()=> showMeasurementNudge('checkin'), 4000);
+  if(daysSince >= 28){
+    const checkinDismissed = lsGet('checkin_nudge_dismissed');
+    if(checkinDismissed){
+      const daysSinceDismiss = Math.floor((today - new Date(checkinDismissed)) / (1000*60*60*24));
+      if(daysSinceDismiss < 3) return;
+    }
+    setTimeout(()=> showMeasurementNudge('checkin'), 4000);
+  }
+}
+
+function dismissMeasureNudge(type){
+  lsSet(type === 'baseline' ? 'baseline_nudge_dismissed' : 'checkin_nudge_dismissed', new Date().toISOString());
+  const n = document.getElementById('measureNudge');
+  if(n) n.remove();
 }
 
 function showMeasurementNudge(type){
@@ -2041,8 +2060,8 @@ function showMeasurementNudge(type){
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Coach Rep</div>
         <div style="font-size:12px;color:var(--text);line-height:1.5;">${isBaseline ? "Log your starting measurements before you begin - this is your baseline. The number that matters is the change, not where you start." : "4 weeks in - time for measurements. Same conditions as last time. Let's see what's actually changing."}</div>
         <div style="display:flex;gap:8px;margin-top:8px;">
-          <button onclick="openMeasurements();document.getElementById('measureNudge').remove();" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Log now</button>
-          <button onclick="document.getElementById('measureNudge').remove()" style="background:var(--surface2);border:1px solid var(--bd);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Later</button>
+          <button onclick="openMeasurements();dismissMeasureNudge('${type}');" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Log now</button>
+          <button onclick="dismissMeasureNudge('${type}')" style="background:var(--surface2);border:1px solid var(--bd);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;">Later</button>
         </div>
       </div>
     </div>`;
@@ -2122,13 +2141,15 @@ async function initPushNotifications(){
 
   // Ask for permission if not granted
   if(Notification.permission === 'default'){
-    showPushPermissionPrompt();
+    // Don't nag - only show if user hasn't dismissed it before
+    if(!lsGet('push_prompt_dismissed')) showPushPermissionPrompt();
   } else if(Notification.permission === 'granted'){
     await subscribeToPush();
   }
 }
 
 function showPushPermissionPrompt(){
+  if(document.getElementById('pushBanner')) return;
   const banner = document.createElement('div');
   banner.id = 'pushBanner';
   banner.style.cssText = `position:fixed;bottom:calc(64px + env(safe-area-inset-bottom));left:0;right:0;max-width:480px;margin:0 auto;background:var(--surface);border-top:1px solid var(--bd);padding:12px 16px;z-index:200;display:flex;align-items:center;gap:10px;`;
@@ -2136,9 +2157,15 @@ function showPushPermissionPrompt(){
     <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;"><img src="coach-rep.png" style="width:100%;height:100%;object-fit:cover;object-position:center top;"></div>
     <div style="flex:1;font-size:12px;color:var(--muted);line-height:1.4;">Coach Rep wants to check in on your training. Allow notifications?</div>
     <button onclick="requestPushPermission()" style="background:var(--accent);border:none;border-radius:6px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;flex-shrink:0;">Allow</button>
-    <button onclick="document.getElementById('pushBanner').remove()" style="background:transparent;border:none;color:var(--dim);font-size:18px;padding:0;flex-shrink:0;">×</button>
+    <button onclick="dismissPushPrompt()" style="background:transparent;border:none;color:var(--dim);font-size:18px;padding:0;flex-shrink:0;">×</button>
   `;
   document.body.appendChild(banner);
+}
+
+function dismissPushPrompt(){
+  lsSet('push_prompt_dismissed', true);
+  const banner = document.getElementById('pushBanner');
+  if(banner) banner.remove();
 }
 
 async function requestPushPermission(){

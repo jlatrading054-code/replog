@@ -895,7 +895,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v46';
+const APP_VERSION = 'replog-v48';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -1900,7 +1900,16 @@ function toggleInfo(ei){
   if(panel) panel.classList.toggle('open');
 }
 
-function toggleEx(ei){ document.getElementById('ex-'+ei).classList.toggle('open'); }
+function toggleEx(ei){
+  const target = document.getElementById('ex-'+ei);
+  if(!target) return;
+  // Collapse all other open exercise blocks (single-open accordion)
+  document.querySelectorAll('.ex-block.open').forEach(b=>{
+    if(b !== target) b.classList.remove('open');
+  });
+  // Toggle the tapped one
+  target.classList.toggle('open');
+}
 
 function toggleDone(ei, si, el){
   if(!el) {
@@ -2469,12 +2478,24 @@ function renderHistory(){
     const type=dayPlan?dayPlan.type:'strength';
     const typeLabel=type==='kb'?'KB':type==='z2'?'Z2':'STR';
     const typeClass=`badge-${type==='kb'?'kb':type==='z2'?'z2':'str'}`;
-    const doneSets=session.sets?session.sets.flat().filter(s=>s.done).length:0;
-    const totalSets=session.sets?session.sets.flat().length:0;
+    const allSets = session.sets ? session.sets.flat() : [];
+    const totalSets = allSets.length;
+    const doneSets = allSets.filter(s=>s.done).length;
+    // Count sets that have actual data logged (reps or weight entered)
+    const loggedSets = allSets.filter(s=>(s.reps&&s.reps!=='')||(s.weight&&s.weight!=='')).length;
+    // Show completed if any checked, otherwise show logged count
+    let summary;
+    if(doneSets>0){
+      summary = `${doneSets}/${totalSets} sets completed`;
+    } else if(loggedSets>0){
+      summary = `${loggedSets}/${totalSets} sets logged`;
+    } else {
+      summary = `${totalSets} sets planned`;
+    }
     html+=`<div class="log-card">
       <div class="log-date">${days[d.getDay()]} · ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div>
       <div class="log-title">${title} <span class="today-badge ${typeClass}" style="font-size:9px;vertical-align:middle">${typeLabel}</span></div>
-      <div class="log-summary">${doneSets}/${totalSets} sets completed</div>
+      <div class="log-summary">${summary}</div>
       ${session.notes?`<div class="log-note">${session.notes}</div>`:''}
     </div>`;
   });
@@ -2829,12 +2850,21 @@ function renderCoach(){
   }
 }
 
+function formatChatText(text){
+  // Escape HTML to prevent injection
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Convert **bold** to <strong>, then newlines to <br>
+  return esc
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
 function addBubble(role, text){
   const area=document.getElementById('chatArea');
   if(!area) return;
   const div=document.createElement('div');
   div.className=`bubble ${role}`;
-  div.textContent=text;
+  div.innerHTML=formatChatText(text);
   area.appendChild(div);
   area.scrollTop=area.scrollHeight;
 }
@@ -2946,7 +2976,7 @@ When the user tells you their schedule changed, they want different training day
     // Add chat bubble
     const bubbleDiv = document.createElement('div');
     bubbleDiv.className = 'bubble coach';
-    bubbleDiv.textContent = reply;
+    bubbleDiv.innerHTML = formatChatText(reply);
     document.getElementById('chatArea').appendChild(bubbleDiv);
 
     // If Coach Rep generated a program, show load button

@@ -895,7 +895,7 @@ textarea.notes-ta:focus{border-color:var(--accent);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.js"></script>
 <script>
 // -- CACHE BUST -------------------------------------------------
-const APP_VERSION = 'replog-v42';
+const APP_VERSION = 'replog-v43';
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{
     regs.forEach(reg=>{
@@ -2883,11 +2883,19 @@ ${recentSessions||'No sessions logged yet'}
 When the user tells you their schedule changed, they want different training days, or any profile info changes - update it with JSON_PROFILE and confirm what changed. Keep responses concise and actionable. Be real, not corporate.`;
 
   try{
-    const data=await callCoachRep(conversationHistory, systemPrompt, 2000, true);
+    const data=await callCoachRep(conversationHistory, systemPrompt, 4000, true);
     console.log('Raw response:', JSON.stringify(data));
     console.log('Program field:', data.program, 'Data.data:', data.data?.program);
     const response = data.content ? data : (data.data || data);
     let reply = response.content.filter(c=>c.type==='text').map(c=>c.text).join('');
+
+    // Strip any JSON_PROGRAM marker text from the reply (the Edge Function
+    // extracts the program separately; raw JSON should never show in chat)
+    const progMarker = 'JSON_PROGRAM:';
+    const progIdx = reply.indexOf(progMarker);
+    if(progIdx !== -1){
+      reply = reply.slice(0, progIdx).trim();
+    }
 
     // Check for profile update
     const profileMarker = 'JSON_PROFILE:';
@@ -2902,6 +2910,11 @@ When the user tells you their schedule changed, they want different training day
         console.log('Profile updated:', profileUpdate);
       } catch(e){ console.log('Profile parse error:', e); }
     }
+
+    // If reply is now empty (was only JSON), give a friendly message
+    if(!reply) reply = response.program
+      ? "Here's a program built for you - tap below to load it into RepLog."
+      : "Done! Let me know if you want any changes.";
     typing.remove();
     conversationHistory.push({role:'assistant',content:reply});
 
